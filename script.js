@@ -1,66 +1,247 @@
-// ==============================================
-// ระบบนำทางระหว่างอาคาร (Inter-building Navigation)
-// ==============================================
+/* ==============================================
+   ระบบนำทางหน่วยงานรัฐ - JavaScript Core
+   Version: 3.0 - Complete Edition
+   Date: 2026-09-02
+   Author: กรมส่งเสริมการปกครองท้องถิ่น
+   License: MIT - ใช้งานฟรี 100%
+=============================================== */
 
-// ตัวแปรหลัก
-let map;
+// ========== 1. GLOBAL VARIABLES & CONFIGURATION ==========
+const CONFIG = {
+    // Map Configuration
+    MAP_CENTER: [13.8763, 100.5518], // ศูนย์ราชการแจ้งวัฒนะ (ปรับตามหน่วยงานคุณ)
+    MAP_ZOOM: 17,
+    MAP_MIN_ZOOM: 15,
+    MAP_MAX_ZOOM: 20,
+    
+    // App Configuration
+    APP_NAME: 'ระบบนำทางหน่วยงานรัฐ',
+    DEPARTMENT_NAME: 'กรมส่งเสริมการปกครองท้องถิ่น',
+    CONTACT_PHONE: '02-123-4567',
+    CONTACT_EMAIL: 'contact@dla.go.th',
+    
+    // Navigation Settings
+    WALKING_SPEED: 1.4, // เมตร/วินาที
+    AUTO_NEXT_DISTANCE: 20, // เมตร (ระยะเปลี่ยนขั้นตอนอัตโนมัติ)
+    GPS_UPDATE_INTERVAL: 3000, // มิลลิวินาที
+    
+    // Storage Keys
+    STORAGE_KEYS: {
+        THEME: 'nav_system_theme',
+        LAST_ROUTE: 'last_route',
+        USER_PREFERENCES: 'user_prefs',
+        BUILDING_DATA: 'building_data_cache'
+    }
+};
+
+// Global State Variables
+let map = null;
+let userMarker = null;
 let buildingMarkers = [];
+let routeLine = null;
+let userPath = [];
 let currentRoute = null;
 let currentStep = 0;
 let buildings = [];
 let routes = [];
-// ==============================================
-// ส่วนเพิ่มเติมสำหรับ Real-time Navigation
-// ==============================================
-let watchId = null; // สำหรับติดตามตำแหน่ง
-let userMarker = null; // เครื่องหมายผู้ใช้
-let routeLine = null; // เส้นทาง
-let routePolyline = null; // เส้นทางการเดินทาง
-let userPath = []; // เก็บเส้นทางที่ผู้ใช้เดิน
+let realtimeWatchId = null;
+let isRealtimeTracking = false;
+let speechEnabled = true;
+let darkMode = false;
 
-// โหลดเมื่อหน้าเว็บพร้อม
-document.addEventListener('DOMContentLoaded', function () {
-    initMap();
-    loadData();
-    initEventListeners();
-    updateSelectOptions();
+// DOM Elements Cache
+let domCache = {};
+
+// ========== 2. INITIALIZATION ==========
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
 });
 
-// 1. เริ่มต้นแผนที่
-function initMap() {
-    // ตั้งค่าพิกัดกลาง (แก้ไขเป็นพิกัดหน่วยงานคุณ)
-    const defaultCenter = [13.8763, 100.5518];
-
-    map = L.map('map').setView(defaultCenter, 17);
-
-    // ใช้แผนที่ OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap',
-        maxZoom: 20,
-        minZoom: 15
-    }).addTo(map);
-
-    // ควบคุมมาตราส่วน
-    L.control.scale({ imperial: false }).addTo(map);
-
-    // ตำแหน่งผู้ใช้
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showUserLocation,
-            () => console.log('ไม่สามารถเข้าถึงตำแหน่งได้'));
+async function initializeApp() {
+    showLoading(true);
+    
+    try {
+        // Initialize DOM Cache
+        initializeDOMCache();
+        
+        // Initialize Map
+        initializeMap();
+        
+        // Load Data
+        await loadData();
+        
+        // Initialize UI Components
+        initializeUI();
+        
+        // Load User Preferences
+        loadUserPreferences();
+        
+        // Check Geolocation Support
+        checkGeolocationSupport();
+        
+        // Show Welcome Message
+        setTimeout(() => {
+            showToast('ระบบนำทางหน่วยงานรัฐพร้อมใช้งาน', 'success');
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Initialization error:', error);
+        showToast('เกิดข้อผิดพลาดในการโหลดระบบ', 'danger');
+    } finally {
+        showLoading(false);
     }
 }
 
-// 2. โหลดข้อมูล
-function loadData() {
-    // ข้อมูลอาคาร (จาก locations.json)
+function initializeDOMCache() {
+    domCache = {
+        // Form Elements
+        fromBuilding: document.getElementById('fromBuilding'),
+        toBuilding: document.getElementById('toBuilding'),
+        
+        // Route Info
+        routeInfo: document.getElementById('routeInfo'),
+        routeName: document.getElementById('routeName'),
+        routeDistance: document.getElementById('routeDistance'),
+        routeTime: document.getElementById('routeTime'),
+        routeSteps: document.getElementById('routeSteps'),
+        routeDescText: document.getElementById('routeDescText'),
+        routeStatus: document.getElementById('routeStatus'),
+        
+        // Buttons
+        previewBtn: document.getElementById('previewBtn'),
+        startNavBtn: document.getElementById('startNavBtn'),
+        prevBtn: document.getElementById('prevBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        speakBtn: document.getElementById('speakBtn'),
+        realtimeBtn: document.getElementById('realtimeBtn'),
+        
+        // Navigation Panel
+        navigationPanel: document.getElementById('navigationPanel'),
+        navTitle: document.getElementById('navTitle'),
+        navSubtitle: document.getElementById('navSubtitle'),
+        currentStepText: document.getElementById('currentStepText'),
+        stepProgress: document.getElementById('stepProgress'),
+        stepDistance: document.getElementById('stepDistance'),
+        stepImage: document.getElementById('stepImage'),
+        imageCaption: document.getElementById('imageCaption'),
+        instructionText: document.getElementById('instructionText'),
+        landmarksText: document.getElementById('landmarksText'),
+        accessibilityText: document.getElementById('accessibilityText'),
+        
+        // Real-time Stats
+        realtimeStats: document.getElementById('realtimeStats'),
+        remainingDistance: document.getElementById('remainingDistance'),
+        remainingTime: document.getElementById('remainingTime'),
+        currentSpeed: document.getElementById('currentSpeed'),
+        
+        // Building List
+        buildingTable: document.getElementById('buildingTable'),
+        buildingCount: document.getElementById('buildingCount'),
+        
+        // Loading
+        loadingOverlay: document.getElementById('loadingOverlay'),
+        
+        // Toast
+        toastMessage: document.getElementById('toastMessage')
+    };
+}
+
+function initializeMap() {
+    // Create Map
+    map = L.map('map', {
+        center: CONFIG.MAP_CENTER,
+        zoom: CONFIG.MAP_ZOOM,
+        minZoom: CONFIG.MAP_MIN_ZOOM,
+        maxZoom: CONFIG.MAP_MAX_ZOOM,
+        zoomControl: true,
+        attributionControl: false
+    });
+    
+    // Add OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: CONFIG.MAP_MAX_ZOOM,
+        minZoom: CONFIG.MAP_MIN_ZOOM
+    }).addTo(map);
+    
+    // Add Scale Control
+    L.control.scale({ imperial: false }).addTo(map);
+    
+    // Add Attribution
+    L.control.attribution({ prefix: false })
+        .addAttribution('ระบบนำทางหน่วยงานรัฐ')
+        .addTo(map);
+    
+    // Add Fullscreen Control
+    map.addControl(new L.Control.Fullscreen());
+    
+    // Map Events
+    map.on('click', onMapClick);
+    map.on('zoomend', onMapZoom);
+}
+
+async function loadData() {
+    try {
+        // Try to load from localStorage first (for offline support)
+        const cachedData = localStorage.getItem(CONFIG.STORAGE_KEYS.BUILDING_DATA);
+        if (cachedData) {
+            const data = JSON.parse(cachedData);
+            buildings = data.buildings || [];
+            routes = data.routes || [];
+            
+            // Check if cache is still valid (less than 1 day old)
+            const cacheDate = new Date(data.timestamp);
+            const now = new Date();
+            const hoursDiff = Math.abs(now - cacheDate) / 36e5;
+            
+            if (hoursDiff < 24) {
+                console.log('Using cached data');
+                updateBuildingUI();
+                return;
+            }
+        }
+        
+        // Load from JSON file
+        const response = await fetch('locations.json');
+        if (!response.ok) throw new Error('Failed to load data');
+        
+        const data = await response.json();
+        buildings = data.buildings || [];
+        routes = data.routes || [];
+        
+        // Cache the data
+        const cacheData = {
+            buildings: buildings,
+            routes: routes,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(CONFIG.STORAGE_KEYS.BUILDING_DATA, JSON.stringify(cacheData));
+        
+        updateBuildingUI();
+        
+    } catch (error) {
+        console.error('Error loading data:', error);
+        
+        // Load sample data if file not found
+        loadSampleData();
+        showToast('โหลดข้อมูลตัวอย่าง (กรุณาแก้ไขไฟล์ locations.json)', 'warning');
+    }
+}
+
+function loadSampleData() {
+    // Sample buildings data
     buildings = [
         {
             id: 1,
-            name: "อาคารสำนักงานกลาง",
+            name: "อาคารรัฐประศาสนภักดี",
             description: "อาคารหลักสำหรับบริหารงาน",
             lat: 13.8765,
             lng: 100.5520,
-            category: "อาคารหลัก"
+            category: "อาคารหลัก",
+            contact: "02-123-4001",
+            opening_hours: "08:30-16:30 น.",
+            services: ["บริหารงาน", "ผู้อำนวยการ", "ฝ่ายบุคคล"],
+            floors: 8
         },
         {
             id: 2,
@@ -68,7 +249,11 @@ function loadData() {
             description: "ให้บริการบัตรประชาชนและทะเบียน",
             lat: 13.8760,
             lng: 100.5515,
-            category: "บริการ"
+            category: "บริการ",
+            contact: "02-123-4002",
+            opening_hours: "08:30-15:30 น.",
+            services: ["ทำบัตรประชาชน", "ทะเบียนราษฎร์", "ใบขับขี่"],
+            floors: 3
         },
         {
             id: 3,
@@ -76,35 +261,27 @@ function loadData() {
             description: "สำหรับการประชุมสัมมนา",
             lat: 13.8758,
             lng: 100.5525,
-            category: "หอประชุม"
-        },
-        {
-            id: 4,
-            name: "ศูนย์ข้อมูลข่าวสาร",
-            description: "บริการข้อมูลและเอกสารราชการ",
-            lat: 13.8762,
-            lng: 100.5512,
-            category: "ข้อมูล"
-        },
-        {
-            id: 5,
-            name: "อาคารโรงอาหาร",
-            description: "บริการอาหารและเครื่องดื่ม",
-            lat: 13.8755,
-            lng: 100.5510,
-            category: "บริการ"
+            category: "หอประชุม",
+            contact: "02-123-4003",
+            opening_hours: "จองล่วงหน้า",
+            services: ["ห้องประชุม 500 ที่นั่ง", "ระบบเสียง"],
+            capacity: 500
         },
         {
             id: 6,
             name: "อาคารฝึกอบรม",
-            description: "ศูนย์ฝึกอบรมเจ้าหน้าที่",
+            description: "ศูนย์ฝึกอบรมและพัฒนาบุคลากร",
             lat: 13.8768,
             lng: 100.5508,
-            category: "ฝึกอบรม"
+            category: "ฝึกอบรม",
+            contact: "02-123-4006",
+            opening_hours: "08:30-16:30 น.",
+            services: ["ห้องอบรม", "ห้องสัมมนา"],
+            classrooms: 10
         }
     ];
-
-    // ข้อมูลเส้นทางระหว่างอาคาร
+    
+    // Sample routes data
     routes = [
         {
             id: "2-3",
@@ -113,11 +290,11 @@ function loadData() {
             name: "ศูนย์บริการ → หอประชุม",
             distance: "180 เมตร",
             time: "4 นาที",
-            image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=200&fit=crop",
+            image: "https://via.placeholder.com/400x200/198754/ffffff?text=เส้นทาง2-3",
             instructions: [
                 "ออกจากศูนย์บริการทางประตูด้านหน้า",
                 "เดินตรงไปตามทางเดิน 80 เมตร",
-                "เลี้ยวขวาที่สวนน้ำพุ (จุดสังเกต: น้ำพุทรงกลม)",
+                "เลี้ยวขวาที่สวนน้ำพุ",
                 "เดินตรงต่ออีก 70 เมตร",
                 "เลี้ยวซ้ายก่อนถึงลานจอดรถ",
                 "หอประชุมใหญ่อยู่ทางขวามือ"
@@ -133,7 +310,7 @@ function loadData() {
             name: "ศูนย์บริการ → อาคารฝึกอบรม",
             distance: "250 เมตร",
             time: "5 นาที",
-            image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=200&fit=crop",
+            image: "https://via.placeholder.com/400x200/0d6efd/ffffff?text=เส้นทาง2-6",
             instructions: [
                 "จากศูนย์บริการ เดินไปทางลานจอดรถ",
                 "เลี้ยวซ้ายที่ทางแยกแรก",
@@ -145,255 +322,394 @@ function loadData() {
             landmarks: "ลานจอดรถ, อาคารบริหาร, ทางเดินหลังคา",
             accessibility: "ทางราบทั้งหมด",
             notes: "ผ่านใต้ร่มไม้"
-        },
-        {
-            id: "1-4",
-            from: 1,
-            to: 4,
-            name: "สำนักงานกลาง → ศูนย์ข้อมูล",
-            distance: "120 เมตร",
-            time: "2 นาที",
-            image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=200&fit=crop",
-            instructions: [
-                "ออกจากอาคารสำนักงานทางประตูข้าง",
-                "เดินตรงไป 60 เมตร",
-                "เลี้ยวซ้ายที่ทางเดินกระจก",
-                "เดินขึ้นบันไดหรือใช้ลิฟต์",
-                "ศูนย์ข้อมูลอยู่ชั้น 1 ทางขวา"
-            ],
-            landmarks: "ทางเดินกระจก, ลิฟต์กลาง",
-            accessibility: "มีลิฟต์และทางลาด",
-            notes: "อยู่ในร่มทั้งหมด"
-        },
-        {
-            id: "3-5",
-            from: 3,
-            to: 5,
-            name: "หอประชุม → โรงอาหาร",
-            distance: "150 เมตร",
-            time: "3 นาที",
-            image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=200&fit=crop",
-            instructions: [
-                "จากหอประชุม เดินลงบันไดด้านข้าง",
-                "เลี้ยวซ้ายที่ลานอเนกประสงค์",
-                "เดินตรงไป 100 เมตร",
-                "เลี้ยวขวาที่ตู้จดหมาย",
-                "โรงอาหารอยู่ชั้น 1 ทางซ้าย"
-            ],
-            landmarks: "ลานอเนกประสงค์, ตู้จดหมาย, ป้ายโรงอาหาร",
-            accessibility: "มีทางลาด",
-            notes: "มีที่นั่งพักระหว่างทาง"
         }
     ];
-
-    // แสดงข้อมูล
-    displayBuildingsOnMap();
-    displayBuildingList();
+    
+    updateBuildingUI();
 }
 
-// 3. แสดงอาคารบนแผนที่
+function initializeUI() {
+    // Populate building dropdowns
+    populateBuildingDropdowns();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Display buildings on map
+    displayBuildingsOnMap();
+    
+    // Setup building table
+    populateBuildingTable();
+    
+    // Check for last route
+    loadLastRoute();
+}
+
+function loadUserPreferences() {
+    // Load theme preference
+    const savedTheme = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME);
+    if (savedTheme === 'dark') {
+        toggleTheme();
+    }
+    
+    // Load speech preference
+    const prefs = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.USER_PREFERENCES) || '{}');
+    speechEnabled = prefs.speechEnabled !== false;
+    
+    // Update UI based on preferences
+    updateSpeechButton();
+}
+
+function checkGeolocationSupport() {
+    if (!navigator.geolocation) {
+        showToast('อุปกรณ์ของคุณไม่รองรับการระบุตำแหน่ง', 'warning');
+    }
+}
+
+// ========== 3. MAP FUNCTIONS ==========
 function displayBuildingsOnMap() {
-    // ล้างเครื่องหมายเก่า
+    // Clear existing markers
     buildingMarkers.forEach(marker => map.removeLayer(marker));
     buildingMarkers = [];
-
-    // สร้างเครื่องหมายใหม่
+    
+    // Add markers for each building
     buildings.forEach(building => {
-        // เลือกสีตามประเภทอาคาร
-        let iconColor = '#198754'; // เขียว - หลัก
-        if (building.category === 'บริการ') iconColor = '#0d6efd'; // น้ำเงิน
-        if (building.category === 'หอประชุม') iconColor = '#ffc107'; // เหลือง
-        if (building.category === 'ข้อมูล') iconColor = '#6f42c1'; // ม่วง
-        if (building.category === 'ฝึกอบรม') iconColor = '#fd7e14'; // ส้ม
-
-        const marker = L.marker([building.lat, building.lng], {
-            icon: L.divIcon({
-                html: `<div style="background:${iconColor};color:white;width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;border:3px solid white;box-shadow:0 2px 5px rgba(0,0,0,0.3)">
-                        ${building.id}
-                      </div>`,
-                className: 'building-marker',
-                iconSize: [35, 35]
-            })
-        }).addTo(map);
-
-        marker.bindPopup(`
-            <div style="min-width:200px">
-                <h6>อาคาร ${building.id}: ${building.name}</h6>
-                <p class="mb-1">${building.description}</p>
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-primary w-100" onclick="setAsStartPoint(${building.id})">
-                        <i class="fas fa-play me-1"></i>เป็นจุดเริ่มต้น
-                    </button>
-                    <button class="btn btn-sm btn-success w-100 mt-1" onclick="setAsEndPoint(${building.id})">
-                        <i class="fas fa-flag me-1"></i>เป็นจุดหมาย
-                    </button>
-                </div>
-            </div>
-        `);
-
+        const marker = createBuildingMarker(building);
+        marker.addTo(map);
         buildingMarkers.push(marker);
     });
 }
 
-// 4. แสดงรายการอาคาร
-function displayBuildingList() {
-    const buildingList = document.getElementById('building-list');
-    buildingList.innerHTML = '';
+function createBuildingMarker(building) {
+    // Determine marker color based on category
+    let markerColor = getMarkerColor(building.category);
+    
+    // Create custom marker icon
+    const icon = L.divIcon({
+        html: `
+            <div class="map-marker marker-${markerColor}" 
+                 style="background-color: var(--${markerColor}-color);"
+                 data-building-id="${building.id}">
+                ${building.id}
+            </div>
+        `,
+        className: `building-marker building-${building.id}`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    });
+    
+    // Create marker
+    const marker = L.marker([building.lat, building.lng], { icon });
+    
+    // Create popup content
+    const popupContent = createBuildingPopup(building);
+    marker.bindPopup(popupContent);
+    
+    // Add click event
+    marker.on('click', function() {
+        highlightBuildingOnTable(building.id);
+    });
+    
+    return marker;
+}
 
-    buildings.forEach((building, index) => {
-        const delay = index * 100;
+function getMarkerColor(category) {
+    const colorMap = {
+        'อาคารหลัก': 'primary',
+        'บริการ': 'success',
+        'หอประชุม': 'warning',
+        'ข้อมูล': 'info',
+        'ฝึกอบรม': 'secondary',
+        'โรงอาหาร': 'danger'
+    };
+    return colorMap[category] || 'dark';
+}
 
-        const item = document.createElement('div');
-        item.className = 'list-group-item building-item';
-        item.style.animationDelay = `${delay}ms`;
-        item.id = `building-${building.id}`;
-
-        item.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="d-flex align-items-center">
-                        <div class="building-number me-2" style="width:30px;height:30px;background:#198754;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold">
-                            ${building.id}
-                        </div>
-                        <div>
-                            <h6 class="mb-0">${building.name}</h6>
-                            <p class="mb-0 text-muted small">${building.description}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-outline-primary" onclick="setAsStartPoint(${building.id})">
-                        <i class="fas fa-play"></i>
+function createBuildingPopup(building) {
+    return `
+        <div class="building-popup">
+            <div class="popup-header">
+                <h6>อาคาร ${building.id}: ${building.name}</h6>
+            </div>
+            <div class="popup-body">
+                <p><i class="fas fa-info-circle"></i> ${building.description}</p>
+                <p><i class="fas fa-phone"></i> ${building.contact || 'ไม่ระบุ'}</p>
+                <p><i class="fas fa-clock"></i> ${building.opening_hours || 'ไม่ระบุ'}</p>
+                
+                ${building.services ? `
+                    <p><strong>บริการ:</strong> ${building.services.join(', ')}</p>
+                ` : ''}
+                
+                <div class="popup-actions mt-2">
+                    <button class="btn btn-sm btn-primary w-100 mb-1" 
+                            onclick="setBuildingAsStart(${building.id})">
+                        <i class="fas fa-play me-1"></i>เป็นจุดเริ่มต้น
                     </button>
-                    <button class="btn btn-sm btn-outline-success" onclick="setAsEndPoint(${building.id})">
-                        <i class="fas fa-flag"></i>
+                    <button class="btn btn-sm btn-success w-100" 
+                            onclick="setBuildingAsDestination(${building.id})">
+                        <i class="fas fa-flag me-1"></i>เป็นจุดหมาย
                     </button>
                 </div>
             </div>
-        `;
-
-        buildingList.appendChild(item);
-    });
+        </div>
+    `;
 }
 
-// 5. อัพเดทตัวเลือกใน dropdown
-function updateSelectOptions() {
-    const fromSelect = document.getElementById('fromBuilding');
-    const toSelect = document.getElementById('toBuilding');
+function onMapClick(e) {
+    // Future: Add custom point functionality
+    console.log('Map clicked at:', e.latlng);
+}
 
-    // ล้างตัวเลือกเก่า (เก็บเฉพาะตัวเลือกแรก)
-    fromSelect.innerHTML = '<option value="">-- เลือกอาคารเริ่มต้น --</option>';
-    toSelect.innerHTML = '<option value="">-- เลือกอาคารปลายทาง --</option>';
+function onMapZoom(e) {
+    // Future: Adjust marker sizes based on zoom level
+}
 
-    // เพิ่มตัวเลือกอาคาร
+function showRouteOnMap(fromBuilding, toBuilding) {
+    // Clear existing route
+    if (routeLine) {
+        map.removeLayer(routeLine);
+        routeLine = null;
+    }
+    
+    // Create polyline between buildings
+    const latlngs = [
+        [fromBuilding.lat, fromBuilding.lng],
+        [toBuilding.lat, toBuilding.lng]
+    ];
+    
+    routeLine = L.polyline(latlngs, {
+        color: '#198754',
+        weight: 4,
+        opacity: 0.7,
+        dashArray: '10, 10',
+        lineCap: 'round',
+        lineJoin: 'round'
+    }).addTo(map);
+    
+    // Fit map to show both buildings
+    const bounds = L.latLngBounds(latlngs);
+    map.fitBounds(bounds, { padding: [50, 50] });
+    
+    // Add popup to route
+    routeLine.bindPopup(`
+        <div class="route-popup">
+            <h6>เส้นทางนำทาง</h6>
+            <p>จาก: ${fromBuilding.name}</p>
+            <p>ไปยัง: ${toBuilding.name}</p>
+            <button class="btn btn-sm btn-success w-100 mt-2" onclick="startNavigation()">
+                <i class="fas fa-play me-1"></i>เริ่มนำทาง
+            </button>
+        </div>
+    `).openPopup();
+}
+
+function clearMapRoute() {
+    if (routeLine) {
+        map.removeLayer(routeLine);
+        routeLine = null;
+    }
+}
+
+// ========== 4. BUILDING MANAGEMENT ==========
+function populateBuildingDropdowns() {
+    if (!domCache.fromBuilding || !domCache.toBuilding) return;
+    
+    // Clear existing options (keep first option)
+    domCache.fromBuilding.innerHTML = '<option value="">-- เลือกอาคารเริ่มต้น --</option>';
+    domCache.toBuilding.innerHTML = '<option value="">-- เลือกอาคารปลายทาง --</option>';
+    
+    // Add building options
     buildings.forEach(building => {
-        fromSelect.innerHTML += `<option value="${building.id}">อาคาร ${building.id}: ${building.name}</option>`;
-        toSelect.innerHTML += `<option value="${building.id}">อาคาร ${building.id}: ${building.name}</option>`;
+        const option1 = document.createElement('option');
+        option1.value = building.id;
+        option1.textContent = `อาคาร ${building.id}: ${building.name}`;
+        domCache.fromBuilding.appendChild(option1);
+        
+        const option2 = document.createElement('option');
+        option2.value = building.id;
+        option2.textContent = `อาคาร ${building.id}: ${building.name}`;
+        domCache.toBuilding.appendChild(option2);
     });
 }
 
-// 6. อัพเดทตัวเลือกปลายทาง (ไม่ให้เลือกอาคารเดียวกัน)
-function updateToOptions() {
-    const fromId = document.getElementById('fromBuilding').value;
-    const toSelect = document.getElementById('toBuilding');
+function populateBuildingTable() {
+    if (!domCache.buildingTable) return;
+    
+    domCache.buildingTable.innerHTML = '';
+    domCache.buildingCount.textContent = buildings.length;
+    
+    buildings.forEach(building => {
+        const row = document.createElement('tr');
+        row.id = `building-row-${building.id}`;
+        row.className = 'fade-in';
+        
+        row.innerHTML = `
+            <td>
+                <div class="building-number">${building.id}</div>
+            </td>
+            <td>
+                <div class="fw-bold">${building.name}</div>
+                <small class="text-muted">${building.description}</small>
+            </td>
+            <td>
+                <span class="badge bg-${getMarkerColor(building.category)}">
+                    ${building.category}
+                </span>
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" 
+                            onclick="setBuildingAsStart(${building.id})"
+                            title="ตั้งเป็นจุดเริ่มต้น">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-outline-success" 
+                            onclick="setBuildingAsDestination(${building.id})"
+                            title="ตั้งเป็นจุดหมาย">
+                        <i class="fas fa-flag"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        domCache.buildingTable.appendChild(row);
+    });
+}
 
-    if (fromId) {
-        // เปิดใช้งาน dropdown ปลายทาง
-        toSelect.disabled = false;
+function highlightBuildingOnTable(buildingId) {
+    // Remove highlight from all rows
+    document.querySelectorAll('#buildingTable tr').forEach(row => {
+        row.classList.remove('selected');
+    });
+    
+    // Highlight selected row
+    const selectedRow = document.getElementById(`building-row-${buildingId}`);
+    if (selectedRow) {
+        selectedRow.classList.add('selected');
+        selectedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
 
-        // ซ่อนอาคารเริ่มต้นจากรายการปลายทาง
-        Array.from(toSelect.options).forEach(option => {
-            if (option.value === fromId) {
-                option.style.display = 'none';
-            } else {
-                option.style.display = '';
-            }
-        });
+function updateBuildingUI() {
+    populateBuildingDropdowns();
+    populateBuildingTable();
+    displayBuildingsOnMap();
+}
 
-        // เลือกตัวเลือกแรกที่แสดง
-        const visibleOptions = Array.from(toSelect.options).filter(opt => opt.style.display !== 'none');
-        if (visibleOptions.length > 1) {
-            toSelect.value = visibleOptions[1].value;
+// ========== 5. ROUTE MANAGEMENT ==========
+function updateRouteSelection() {
+    const fromId = parseInt(domCache.fromBuilding.value);
+    const toId = parseInt(domCache.toBuilding.value);
+    
+    // Update destination dropdown to exclude selected start building
+    updateDestinationOptions(fromId);
+    
+    if (fromId && toId) {
+        updateRouteInfo();
+    } else {
+        hideRouteInfo();
+    }
+}
+
+function updateDestinationOptions(excludedId) {
+    if (!domCache.toBuilding) return;
+    
+    const options = domCache.toBuilding.options;
+    for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        if (option.value == excludedId) {
+            option.disabled = true;
+            option.style.display = 'none';
+        } else {
+            option.disabled = false;
+            option.style.display = '';
         }
-
-        // ตรวจสอบเส้นทาง
-        checkRoute();
-    } else {
-        toSelect.disabled = true;
-        toSelect.value = '';
-        document.getElementById('routeInfo').classList.add('d-none');
-        document.getElementById('showRouteBtn').disabled = true;
-        document.getElementById('startRouteBtn').disabled = true;
+    }
+    
+    // Select first enabled option
+    for (let i = 0; i < options.length; i++) {
+        if (!options[i].disabled && options[i].value) {
+            domCache.toBuilding.value = options[i].value;
+            break;
+        }
     }
 }
 
-// 7. ตรวจสอบว่ามีเส้นทางนี้หรือไม่
-function checkRoute() {
-    const fromId = parseInt(document.getElementById('fromBuilding').value);
-    const toId = parseInt(document.getElementById('toBuilding').value);
-
-    if (!fromId || !toId) return;
-
-    // หาเส้นทาง
-    const route = findRoute(fromId, toId);
-
-    if (route) {
-        // แสดงข้อมูลเส้นทาง
-        document.getElementById('routeInfo').classList.remove('d-none');
-        document.getElementById('routeDistance').textContent = route.distance;
-        document.getElementById('routeTime').textContent = route.time;
-        document.getElementById('routeDescription').textContent = route.name;
-
-        // เปิดใช้งานปุ่ม
-        document.getElementById('showRouteBtn').disabled = false;
-        document.getElementById('startRouteBtn').disabled = false;
-
-        currentRoute = route;
-    } else {
-        // แสดงข้อความว่าไม่มีเส้นทาง
-        document.getElementById('routeInfo').classList.remove('d-none');
-        document.getElementById('routeDistance').textContent = 'ต้องสำรวจ';
-        document.getElementById('routeTime').textContent = '-';
-        document.getElementById('routeDescription').textContent = 'ยังไม่มีข้อมูลเส้นทางนี้';
-        document.getElementById('routeInfo').className = 'alert alert-warning';
-
-        // ปิดการใช้งานปุ่ม
-        document.getElementById('showRouteBtn').disabled = true;
-        document.getElementById('startRouteBtn').disabled = true;
-
-        currentRoute = null;
+function updateRouteInfo() {
+    const fromId = parseInt(domCache.fromBuilding.value);
+    const toId = parseInt(domCache.toBuilding.value);
+    
+    if (!fromId || !toId) {
+        hideRouteInfo();
+        return;
     }
-}
-
-// 8. ค้นหาเส้นทาง
-function findRoute(fromId, toId) {
-    // ค้นหาเส้นทางตรง
-    const directRoute = routes.find(r =>
-        (r.from === fromId && r.to === toId) ||
-        (r.from === toId && r.to === fromId)
-    );
-
-    if (directRoute) return directRoute;
-
-    // ถ้าไม่มีเส้นทางตรง สร้างเส้นทางอัตโนมัติ (แบบง่าย)
+    
     const fromBuilding = buildings.find(b => b.id === fromId);
     const toBuilding = buildings.find(b => b.id === toId);
+    
+    if (!fromBuilding || !toBuilding) {
+        hideRouteInfo();
+        return;
+    }
+    
+    // Find route
+    currentRoute = findRoute(fromId, toId);
+    
+    if (!currentRoute) {
+        hideRouteInfo();
+        showToast('ยังไม่มีข้อมูลเส้นทางนี้', 'warning');
+        return;
+    }
+    
+    // Update route info display
+    domCache.routeInfo.classList.remove('d-none');
+    domCache.routeName.textContent = currentRoute.name;
+    domCache.routeDistance.textContent = currentRoute.distance;
+    domCache.routeTime.textContent = currentRoute.time;
+    domCache.routeSteps.textContent = `${currentRoute.instructions.length} ขั้น`;
+    domCache.routeDescText.textContent = currentRoute.notes || 'เส้นทางแนะนำภายในหน่วยงาน';
+    
+    // Enable buttons
+    domCache.previewBtn.disabled = false;
+    domCache.startNavBtn.disabled = false;
+    
+    // Save as last route
+    saveLastRoute(fromId, toId);
+}
 
+function findRoute(fromId, toId) {
+    // Try to find direct route
+    let route = routes.find(r => 
+        (r.from === fromId && r.to === toId) || 
+        (r.from === toId && r.to === fromId)
+    );
+    
+    if (route) return route;
+    
+    // If no direct route, create a generic one
+    const fromBuilding = buildings.find(b => b.id === fromId);
+    const toBuilding = buildings.find(b => b.id === toId);
+    
     if (!fromBuilding || !toBuilding) return null;
-
-    // คำนวณระยะทางคร่าวๆ
-    const distance = calculateDistance(fromBuilding.lat, fromBuilding.lng, toBuilding.lat, toBuilding.lng);
-
+    
+    // Calculate approximate distance
+    const distance = calculateDistance(
+        fromBuilding.lat, fromBuilding.lng,
+        toBuilding.lat, toBuilding.lng
+    );
+    
+    // Create generic route
     return {
         id: `${fromId}-${toId}`,
         from: fromId,
         to: toId,
         name: `${fromBuilding.name} → ${toBuilding.name}`,
         distance: `${Math.round(distance)} เมตร`,
-        time: `${Math.round(distance / 50)} นาที`, // เดิน 50 เมตร/นาที
+        time: `${Math.round(distance / (CONFIG.WALKING_SPEED * 60))} นาที`,
         image: "https://via.placeholder.com/400x200/6c757d/ffffff?text=เส้นทางสำรวจเพิ่มเติม",
         instructions: [
-            `เดินจาก ${fromBuilding.name}`,
+            `ออกจาก ${fromBuilding.name}`,
             "เดินตามทางเดินหลัก",
             `ไปยัง ${toBuilding.name}`,
             "คำแนะนำเพิ่มเติมต้องสำรวจเส้นทางจริง"
@@ -404,587 +720,409 @@ function findRoute(fromId, toId) {
     };
 }
 
-// 9. คำนวณระยะทางระหว่างสองจุด
-function calculateDistance(lat1, lng1, lat2, lng2) {
-    // แปลงเป็นเรเดียน
-    const R = 6371000; // รัศมีโลกเป็นเมตร
+function hideRouteInfo() {
+    domCache.routeInfo.classList.add('d-none');
+    domCache.previewBtn.disabled = true;
+    domCache.startNavBtn.disabled = true;
+    currentRoute = null;
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // Radius of Earth in meters
     const φ1 = lat1 * Math.PI / 180;
     const φ2 = lat2 * Math.PI / 180;
     const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lng2 - lng1) * Math.PI / 180;
-
-    // สูตร Haversine
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+    
     const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // ระยะทางเป็นเมตร
+    
+    return R * c;
 }
 
-// 10. แสดงเส้นทางบนแผนที่
-function showRouteOnMap() {
-    if (!currentRoute) return;
-
-    // ล้างเส้นทางเก่า
-    if (routeLine) {
-        map.removeLayer(routeLine);
-    }
-
-    const fromBuilding = buildings.find(b => b.id === currentRoute.from);
-    const toBuilding = buildings.find(b => b.id === currentRoute.to);
-
-    if (!fromBuilding || !toBuilding) return;
-
-    // วาดเส้นตรงระหว่างอาคาร
-    routeLine = L.polyline([
-        [fromBuilding.lat, fromBuilding.lng],
-        [toBuilding.lat, toBuilding.lng]
-    ], {
-        color: '#198754',
-        weight: 4,
-        opacity: 0.7,
-        dashArray: '10, 10'
-    }).addTo(map);
-
-    // ปรับมุมมองแผนที่ให้เห็นเส้นทาง
-    const bounds = L.latLngBounds([
-        [fromBuilding.lat, fromBuilding.lng],
-        [toBuilding.lat, toBuilding.lng]
-    ]);
-    map.fitBounds(bounds, { padding: [50, 50] });
-
-    // แสดง Popup
-    routeLine.bindPopup(`
-        <div style="min-width:200px">
-            <h6>${currentRoute.name}</h6>
-            <p class="mb-1"><i class="fas fa-ruler me-1"></i> ${currentRoute.distance}</p>
-            <p class="mb-1"><i class="fas fa-clock me-1"></i> ${currentRoute.time}</p>
-            <button class="btn btn-sm btn-success w-100 mt-2" onclick="startRouteNavigation()">
-                <i class="fas fa-play me-1"></i>เริ่มนำทาง
-            </button>
-        </div>
-    `).openPopup();
+function saveLastRoute(fromId, toId) {
+    const lastRoute = { fromId, toId, timestamp: new Date().toISOString() };
+    localStorage.setItem(CONFIG.STORAGE_KEYS.LAST_ROUTE, JSON.stringify(lastRoute));
 }
 
-// 11. เริ่มนำทางตามเส้นทาง
-function startRouteNavigation() {
-    if (!currentRoute) return;
-
-    currentStep = 0;
-    document.getElementById('navigationPanel').classList.remove('d-none');
-    document.getElementById('routeTitle').textContent = currentRoute.name;
-    document.getElementById('routeStats').textContent = `${currentRoute.distance} • ${currentRoute.time}`;
-
-    // อัพเดทข้อมูลนำทาง
-    showNavigationStep(0);
-
-    // เลื่อนไปที่แผงนำทาง
-    document.getElementById('navigationPanel').scrollIntoView({ behavior: 'smooth' });
-}
-
-// 12. แสดงขั้นตอนนำทาง
-function showNavigationStep(stepIndex) {
-    if (!currentRoute || !currentRoute.instructions) return;
-
-    const instructions = currentRoute.instructions;
-    currentStep = stepIndex;
-
-    // อัพเดทขั้นตอน
-    document.getElementById('currentStep').textContent = `ขั้นตอนที่ ${stepIndex + 1}/${instructions.length}`;
-    document.getElementById('instructionText').textContent = instructions[stepIndex];
-
-    // อัพเดทภาพ (แสดงเฉพาะขั้นตอนแรก)
-    if (stepIndex === 0 && currentRoute.image) {
-        document.getElementById('routeImage').src = currentRoute.image;
-    }
-
-    // อัพเดทจุดสังเกต (แสดงเฉพาะขั้นตอนแรก)
-    if (stepIndex === 0 && currentRoute.landmarks) {
-        document.getElementById('landmarksInfo').classList.remove('d-none');
-        document.getElementById('landmarksText').textContent = currentRoute.landmarks;
-    }
-
-    // อัพเดทความคืบหน้า
-    const progressPercent = Math.round(((stepIndex + 1) / instructions.length) * 100);
-    document.getElementById('progressPercent').textContent = `${progressPercent}%`;
-    document.getElementById('progressBar').style.width = `${progressPercent}%`;
-
-    // อัพเดทปุ่ม
-    document.getElementById('prevBtn').disabled = stepIndex === 0;
-    document.getElementById('nextBtn').disabled = stepIndex === instructions.length - 1;
-
-    // พูดคำแนะนำ (ถ้าผู้ใช้อนุญาต)
-    if (stepIndex === 0) {
-        speakInstruction();
-    }
-}
-
-// 13. ฟังก์ชันนำทางขั้นตอนต่อไป
-function nextStep() {
-    if (!currentRoute || !currentRoute.instructions) return;
-
-    if (currentStep < currentRoute.instructions.length - 1) {
-        showNavigationStep(currentStep + 1);
-    } else {
-        // ถึงจุดหมาย
-        document.getElementById('instructionText').innerHTML = `
-            <div class="text-center">
-                <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
-                <h6 class="mb-1">ถึงจุดหมายแล้ว!</h6>
-                <p class="mb-0 small">คุณมาถึงปลายทางเรียบร้อยแล้ว</p>
-            </div>
-        `;
-        speakText("ถึงจุดหมายแล้ว ปลายทางอยู่ตรงหน้าคุณแล้ว");
-    }
-}
-
-function prevStep() {
-    if (currentStep > 0) {
-        showNavigationStep(currentStep - 1);
-    }
-}
-
-// 14. พูดคำแนะนำ
-function speakInstruction() {
-    if (!currentRoute || !currentRoute.instructions) return;
-
-    const text = currentRoute.instructions[currentStep];
-    speakText(text);
-}
-
-function speakText(text) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'th-TH';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        speechSynthesis.speak(utterance);
-    }
-}
-
-// 15. หยุดการนำทาง
-function stopNavigation() {
-    currentRoute = null;
-    currentStep = 0;
-    document.getElementById('navigationPanel').classList.add('d-none');
-
-    if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-    }
-}
-
-// 16. ตั้งค่าจุดเริ่มต้น/สิ้นสุดจากปุ่ม
-function setAsStartPoint(buildingId) {
-    document.getElementById('fromBuilding').value = buildingId;
-    updateToOptions();
-    highlightBuilding(buildingId, 'start');
-}
-
-function setAsEndPoint(buildingId) {
-    document.getElementById('toBuilding').value = buildingId;
-    checkRoute();
-    highlightBuilding(buildingId, 'end');
-}
-
-// 17. เน้นอาคารที่เลือก
-function highlightBuilding(buildingId, type) {
-    // ล้างการเน้นเก่า
-    document.querySelectorAll('.building-item').forEach(item => {
-        item.classList.remove('building-selected');
-        item.classList.remove('bg-primary', 'bg-success', 'text-white');
-    });
-
-    // เน้นอาคารที่เลือก
-    const buildingItem = document.getElementById(`building-${buildingId}`);
-    if (buildingItem) {
-        buildingItem.classList.add('building-selected');
-        if (type === 'start') {
-            buildingItem.classList.add('bg-primary', 'text-white');
-        } else {
-            buildingItem.classList.add('bg-success', 'text-white');
+function loadLastRoute() {
+    const lastRouteJson = localStorage.getItem(CONFIG.STORAGE_KEYS.LAST_ROUTE);
+    if (!lastRouteJson) return;
+    
+    try {
+        const lastRoute = JSON.parse(lastRouteJson);
+        const fromBuilding = buildings.find(b => b.id === lastRoute.fromId);
+        const toBuilding = buildings.find(b => b.id === lastRoute.toId);
+        
+        if (fromBuilding && toBuilding) {
+            domCache.fromBuilding.value = lastRoute.fromId;
+            domCache.toBuilding.value = lastRoute.toId;
+            updateRouteSelection();
+            updateRouteInfo();
         }
+    } catch (error) {
+        console.error('Error loading last route:', error);
     }
 }
 
-// 18. แสดงตำแหน่งผู้ใช้
-function showUserLocation(position) {
-    const userLatLng = [position.coords.latitude, position.coords.longitude];
-
-    if (userMarker) {
-        map.removeLayer(userMarker);
-    }
-
-    userMarker = L.marker(userLatLng, {
-        icon: L.divIcon({
-            html: '<div style="background:#0d6efd;color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 5px rgba(0,0,0,0.3)"><i class="fas fa-user"></i></div>',
-            className: 'user-marker',
-            iconSize: [30, 30]
-        })
-    }).addTo(map);
-
-    userMarker.bindPopup("<b>ตำแหน่งปัจจุบันของคุณ</b>");
-}
-
-function useMyLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showUserLocation,
-            () => alert('ไม่สามารถเข้าถึงตำแหน่งได้'));
-    } else {
-        alert('เบราว์เซอร์ไม่รองรับการเข้าถึงตำแหน่ง');
-    }
-}
-
-// 19. แสดงอาคารทั้งหมด
-function showAllBuildings() {
-    if (buildings.length > 0) {
-        const bounds = L.latLngBounds(
-            buildings.map(b => [b.lat, b.lng])
-        );
-        map.fitBounds(bounds, { padding: [50, 50] });
-    }
-}
-
-// 20. รีเซ็ตเส้นทาง
-function resetRoute() {
-    document.getElementById('fromBuilding').value = '';
-    document.getElementById('toBuilding').value = '';
-    document.getElementById('toBuilding').disabled = true;
-    document.getElementById('routeInfo').classList.add('d-none');
-    document.getElementById('showRouteBtn').disabled = true;
-    document.getElementById('startRouteBtn').disabled = true;
-
-    // ล้างเส้นทางบนแผนที่
-    if (routeLine) {
-        map.removeLayer(routeLine);
-        routeLine = null;
-    }
-
-    // ล้างการเน้นอาคาร
-    document.querySelectorAll('.building-item').forEach(item => {
-        item.classList.remove('building-selected', 'bg-primary', 'bg-success', 'text-white');
-    });
-
-    // หยุดการนำทางถ้ากำลังทำอยู่
-    stopNavigation();
-}
-
-// 21. ฟังก์ชันเสริม
-function toggleDetails() {
-    const landmarksInfo = document.getElementById('landmarksInfo');
-    landmarksInfo.classList.toggle('d-none');
-}
-
-function toggleFullscreen() {
-    const navPanel = document.getElementById('navigationPanel');
-    navPanel.classList.toggle('fullscreen-navigation');
-}
-
-function showAbout() {
-    new bootstrap.Modal(document.getElementById('aboutModal')).show();
-}
-
-// 22. ตั้งค่า Event Listeners
-function initEventListeners() {
-    // ตรวจสอบเส้นทางเมื่อเลือกอาคารปลายทาง
-    document.getElementById('toBuilding').addEventListener('change', checkRoute);
-
-    // ปุ่มกด Enter ในช่องค้นหา
-    document.getElementById('searchInput')?.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') filterBuildings();
-    });
-}
-
-// เริ่มต้นติดตามตำแหน่งแบบเรียลไทม์
-function startRealTimeNavigation() {
-    if (!navigator.geolocation) {
-        alert('อุปกรณ์ของคุณไม่รองรับ GPS แบบเรียลไทม์');
+// ========== 6. NAVIGATION FUNCTIONS ==========
+function startNavigation() {
+    if (!currentRoute) {
+        showToast('กรุณาเลือกเส้นทางก่อน', 'warning');
         return;
     }
-
-    // หยุดการติดตามเก่าถ้ามี
-    if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
+    
+    // Get buildings
+    const fromBuilding = buildings.find(b => b.id === currentRoute.from);
+    const toBuilding = buildings.find(b => b.id === currentRoute.to);
+    
+    if (!fromBuilding || !toBuilding) {
+        showToast('ไม่พบข้อมูลอาคาร', 'danger');
+        return;
     }
-
-    // เริ่มติดตามตำแทไทม์
-    watchId = navigator.geolocation.watchPosition(
-        updateUserPosition, // ฟังก์ชันอัพเดทตำแหน่ง
-        handlePositionError, // ฟังก์ชันจัดการข้อผิดพลาด
-        {
-            enableHighAccuracy: true, // ความแม่นยำสูง
-            timeout: 10000, //  timeout 10 วินาที
-            maximumAge: 0 // ไม่ใช้ข้อมูลเก่า
-        }
-    );
-
-    // แสดงข้อความ
-    showNavigationMessage('เริ่มติดตามตำแหน่งเรียลไทม์แล้ว');
+    
+    // Reset navigation state
+    currentStep = 0;
+    userPath = [];
+    
+    // Show navigation panel
+    showNavigationPanel();
+    
+    // Update navigation panel
+    updateNavigationPanel(fromBuilding, toBuilding);
+    
+    // Show route on map
+    showRouteOnMap(fromBuilding, toBuilding);
+    
+    // Start with first step
+    showStep(0);
+    
+    // Speak first instruction if enabled
+    if (speechEnabled) {
+        speakInstruction();
+    }
+    
+    // Show success message
+    showToast('เริ่มระบบนำทางเรียบร้อยแล้ว', 'success');
 }
 
-// อัพเดทตำแหน่งผู้ใช้
-function updateUserPosition(position) {
-    const userLat = position.coords.latitude;
-    const userLng = position.coords.longitude;
-
-    // เพิ่มตำแหน่งลงในเส้นทาง
-    userPath.push([userLat, userLng]);
-
-    // อัพเดทเครื่องหมายผู้ใช้
-    updateUserMarker(userLat, userLng);
-
-    // อัพเดทแผนที่ให้แสดงผู้ใช้
-    map.setView([userLat, userLng], 18);
-
-    // ตรวจสอบว่าอยู่ใกล้จุดเปลี่ยนทางหรือไม่
-    checkForNextStep(userLat, userLng);
-
-    // อัพเดทข้อมูลบนหน้าจอ
-    updateNavigationInfo(position);
+function showNavigationPanel() {
+    domCache.navigationPanel.classList.remove('d-none');
+    domCache.navigationPanel.classList.add('show');
+    
+    // Scroll to navigation panel
+    setTimeout(() => {
+        domCache.navigationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
 }
 
-// อัพเดทเครื่องหมายผู้ใช้
-function updateUserMarker(lat, lng) {
-    if (userMarker) {
-        // ย้ายเครื่องหมายไปตำแหน่งใหม่
-        userMarker.setLatLng([lat, lng]);
+function updateNavigationPanel(fromBuilding, toBuilding) {
+    domCache.navTitle.textContent = currentRoute.name;
+    domCache.navSubtitle.textContent = `${fromBuilding.name} → ${toBuilding.name}`;
+    
+    // Update real-time stats if tracking
+    if (isRealtimeTracking) {
+        domCache.realtimeStats.classList.remove('d-none');
+    } else {
+        domCache.realtimeStats.classList.add('d-none');
+    }
+}
 
-        // สร้างเส้นทางการเดิน
-        if (userPath.length > 1) {
-            if (routePolyline) {
-                map.removeLayer(routePolyline);
-            }
-            routePolyline = L.polyline(userPath, {
-                color: '#0d6efd',
-                weight: 4,
-                opacity: 0.7,
-                lineCap: 'round'
-            }).addTo(map);
+function showStep(stepIndex) {
+    if (!currentRoute || !currentRoute.instructions) return;
+    
+    const instructions = currentRoute.instructions;
+    
+    // Validate step index
+    if (stepIndex < 0 || stepIndex >= instructions.length) {
+        return;
+    }
+    
+    currentStep = stepIndex;
+    
+    // Update step display
+    domCache.currentStepText.textContent = `ขั้นตอนที่ ${stepIndex + 1}/${instructions.length}`;
+    domCache.stepDistance.textContent = currentRoute.distance;
+    
+    // Update progress
+    const progressPercent = ((stepIndex + 1) / instructions.length) * 100;
+    domCache.stepProgress.style.width = `${progressPercent}%`;
+    
+    // Update instruction
+    domCache.instructionText.textContent = instructions[stepIndex];
+    
+    // Update image (show different images for different steps if available)
+    if (currentRoute.image) {
+        domCache.stepImage.src = currentRoute.image;
+        domCache.imageCaption.textContent = `ภาพประกอบขั้นตอนที่ ${stepIndex + 1}`;
+    }
+    
+    // Update landmarks (show only for first step)
+    if (stepIndex === 0 && currentRoute.landmarks) {
+        domCache.landmarksText.textContent = currentRoute.landmarks;
+    } else {
+        domCache.landmarksText.textContent = '-';
+    }
+    
+    // Update accessibility info
+    if (currentRoute.accessibility) {
+        domCache.accessibilityText.textContent = currentRoute.accessibility;
+    }
+    
+    // Update button states
+    domCache.prevBtn.disabled = stepIndex === 0;
+    domCache.nextBtn.disabled = stepIndex === instructions.length - 1;
+    
+    // Update real-time button
+    updateRealtimeButton();
+}
+
+function nextStep() {
+    if (!currentRoute || !currentRoute.instructions) return;
+    
+    if (currentStep < currentRoute.instructions.length - 1) {
+        showStep(currentStep + 1);
+        
+        // Speak instruction if enabled
+        if (speechEnabled) {
+            speakInstruction();
         }
     } else {
-        // สร้างเครื่องหมายใหม่
-        userMarker = L.marker([lat, lng], {
-            icon: L.divIcon({
-                html: `<div class="real-time-marker">
-                         <div class="pulse"></div>
-                         <div class="dot"></div>
-                       </div>`,
-                className: 'real-time-marker-div',
-                iconSize: [40, 40]
-            })
+        // Reached destination
+        showDestinationReached();
+    }
+}
+
+function previousStep() {
+    if (currentStep > 0) {
+        showStep(currentStep - 1);
+        
+        // Speak instruction if enabled
+        if (speechEnabled) {
+            speakInstruction();
+        }
+    }
+}
+
+function showDestinationReached() {
+    domCache.instructionText.innerHTML = `
+        <div class="text-center text-success">
+            <i class="fas fa-check-circle fa-2x mb-2"></i>
+            <h6 class="mb-1">ถึงจุดหมายแล้ว!</h6>
+            <p class="mb-0 small">คุณมาถึงปลายทางเรียบร้อยแล้ว</p>
+        </div>
+    `;
+    
+    domCache.stepImage.src = "https://via.placeholder.com/400x200/198754/ffffff?text=ถึงจุดหมายแล้ว!";
+    domCache.imageCaption.textContent = "ปลายทางถึงแล้ว";
+    
+    domCache.nextBtn.disabled = true;
+    
+    // Speak destination reached
+    if (speechEnabled) {
+        speakText("ถึงจุดหมายแล้ว คุณมาถึงปลายทางเรียบร้อยแล้ว");
+    }
+    
+    // Stop real-time tracking if active
+    if (isRealtimeTracking) {
+        stopRealtimeTracking();
+    }
+    
+    showToast('ถึงจุดหมายปลายทางเรียบร้อยแล้ว', 'success');
+}
+
+function stopNavigation() {
+    // Hide navigation panel
+    domCache.navigationPanel.classList.remove('show');
+    setTimeout(() => {
+        domCache.navigationPanel.classList.add('d-none');
+    }, 300);
+    
+    // Clear current route
+    currentRoute = null;
+    currentStep = 0;
+    
+    // Clear map route
+    clearMapRoute();
+    
+    // Stop real-time tracking
+    if (isRealtimeTracking) {
+        stopRealtimeTracking();
+    }
+    
+    // Clear user path
+    userPath = [];
+    
+    // Reset user marker if exists
+    if (userMarker) {
+        map.removeLayer(userMarker);
+        userMarker = null;
+    }
+    
+    showToast('หยุดการนำทางเรียบร้อยแล้ว', 'info');
+}
+
+// ========== 7. REAL-TIME TRACKING ==========
+function toggleRealtimeTracking() {
+    if (isRealtimeTracking) {
+        stopRealtimeTracking();
+    } else {
+        startRealtimeTracking();
+    }
+}
+
+function startRealtimeTracking() {
+    if (!navigator.geolocation) {
+        showToast('อุปกรณ์ของคุณไม่รองรับ GPS', 'warning');
+        return;
+    }
+    
+    if (!currentRoute) {
+        showToast('กรุณาเริ่มนำทางก่อน', 'warning');
+        return;
+    }
+    
+    // Request permission
+    navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+        if (permissionStatus.state === 'denied') {
+            showToast('โปรดอนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์', 'warning');
+            return;
+        }
+        
+        // Start watching position
+        realtimeWatchId = navigator.geolocation.watchPosition(
+            updateUserPosition,
+            handleGeolocationError,
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+        
+        isRealtimeTracking = true;
+        updateRealtimeButton();
+        domCache.realtimeStats.classList.remove('d-none');
+        
+        showToast('เริ่มติดตามตำแหน่งเรียลไทม์แล้ว', 'success');
+        
+    }).catch(error => {
+        console.error('Geolocation permission error:', error);
+        showToast('ไม่สามารถขออนุญาตตำแหน่งได้', 'danger');
+    });
+}
+
+function stopRealtimeTracking() {
+    if (realtimeWatchId) {
+        navigator.geolocation.clearWatch(realtimeWatchId);
+        realtimeWatchId = null;
+    }
+    
+    isRealtimeTracking = false;
+    updateRealtimeButton();
+    domCache.realtimeStats.classList.add('d-none');
+    
+    // Clear accuracy circle if exists
+    if (window.accuracyCircle) {
+        map.removeLayer(window.accuracyCircle);
+        window.accuracyCircle = null;
+    }
+    
+    showToast('หยุดติดตามตำแหน่งเรียลไทม์แล้ว', 'info');
+}
+
+function updateUserPosition(position) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    const accuracy = position.coords.accuracy;
+    const heading = position.coords.heading;
+    const speed = position.coords.speed;
+    
+    // Update user marker
+    updateUserMarker(lat, lng);
+    
+    // Add to user path
+    userPath.push([lat, lng]);
+    
+    // Update accuracy circle
+    updateAccuracyCircle(lat, lng, accuracy);
+    
+    // Update real-time stats
+    updateRealtimeStats(position);
+    
+    // Check if close to destination for auto-next
+    if (currentRoute) {
+        const toBuilding = buildings.find(b => b.id === currentRoute.to);
+        if (toBuilding) {
+            const distanceToTarget = calculateDistance(lat, lng, toBuilding.lat, toBuilding.lng);
+            
+            if (distanceToTarget < CONFIG.AUTO_NEXT_DISTANCE && 
+                currentStep < currentRoute.instructions.length - 1) {
+                nextStep();
+            }
+        }
+    }
+    
+    // Center map on user (optional)
+    // map.setView([lat, lng], map.getZoom());
+}
+
+function updateUserMarker(lat, lng) {
+    if (!userMarker) {
+        // Create user marker
+        const userIcon = L.divIcon({
+            html: `
+                <div class="user-marker">
+                    <div class="pulse"></div>
+                    <div class="dot"></div>
+                </div>
+            `,
+            className: 'user-marker-icon',
+            iconSize: [40, 40],
+            iconAnchor: [20, 40]
+        });
+        
+        userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+    } else {
+        // Update existing marker position
+        userMarker.setLatLng([lat, lng]);
+    }
+    
+    // Draw user path
+    drawUserPath();
+}
+
+function drawUserPath() {
+    // Clear existing path if too long
+    if (userPath.length > 100) {
+        userPath.shift();
+    }
+    
+    // Draw path
+    if (userPath.length > 1) {
+        if (window.userPathLine) {
+            map.removeLayer(window.userPathLine);
+        }
+        
+        window.userPathLine = L.polyline(userPath, {
+            color: '#0d6efd',
+            weight: 3,
+            opacity: 0.7,
+            lineCap: 'round',
+            lineJoin: 'round'
         }).addTo(map);
     }
 }
 
-// ตรวจสอบว่าอยู่ใกล้จุดเปลี่ยนทางหรือไม่
-function checkForNextStep(userLat, userLng) {
-    if (!currentRoute || !currentRoute.instructions) return;
-
-    // ตรวจสอบว่าใกล้ถึงขั้นตอนถัดไปหรือไม่
-    // (ตัวอย่าง: ถ้าอยู่ใกล้จุดหมาย 20 เมตร ให้เปลี่ยนขั้นตอน)
-    const targetBuilding = buildings.find(b => b.id === currentRoute.to);
-    if (!targetBuilding) return;
-
-    const distanceToTarget = calculateDistance(
-        userLat, userLng,
-        targetBuilding.lat, targetBuilding.lng
-    );
-
-    // ถ้าใกล้จุดหมายน้อยกว่า 20 เมตร
-    if (distanceToTarget < 20 && currentStep < currentRoute.instructions.length - 1) {
-        nextStep(); // เปลี่ยนขั้นตอนอัตโนมัติ
-        speakText("ใกล้ถึงแล้ว อีกนิดเดียวก็ถึงจุดหมาย");
-    }
-}
-
-// อัพเดทข้อมูลนำทาง
-function updateNavigationInfo(position) {
-    if (!currentRoute) return;
-
-    const targetBuilding = buildings.find(b => b.id === currentRoute.to);
-    if (!targetBuilding) return;
-
-    const distance = calculateDistance(
-        position.coords.latitude,
-        position.coords.longitude,
-        targetBuilding.lat,
-        targetBuilding.lng
-    );
-
-    // แสดงระยะทางคงเหลือ
-    document.getElementById('distanceRemaining').textContent =
-        `เหลืออีก ${Math.round(distance)} เมตร`;
-
-    // คำนวณเวลาถึงโดยประมาณ
-    const walkingSpeed = 1.4; // เมตร/วินาที (เดินปกติ)
-    const timeRemaining = Math.round(distance / walkingSpeed / 60);
-    document.getElementById('timeRemaining').textContent =
-        `ประมาณ ${timeRemaining} นาที`;
-}
-
-// จัดการข้อผิดพลาด GPS
-function handlePositionError(error) {
-    let message = 'GPS มีปัญหา: ';
-
-    switch (error.code) {
-        case error.PERMISSION_DENIED:
-            message += 'ไม่อนุญาตให้เข้าถึงตำแหน่ง';
-            break;
-        case error.POSITION_UNAVAILABLE:
-            message += 'ไม่สามารถรับข้อมูลตำแหน่งได้';
-            break;
-        case error.TIMEOUT:
-            message += 'ขอข้อมูลตำแหน่งนานเกินไป';
-            break;
-        default:
-            message += 'ข้อผิดพลาดไม่ทราบสาเหตุ';
-            break;
-    }
-
-    showNavigationMessage(message, 'warning');
-}
-
-// หยุดการติดตามตำแหน่ง
-function stopRealTimeTracking() {
-    if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-    }
-
-    if (routePolyline) {
-        map.removeLayer(routePolyline);
-        routePolyline = null;
-    }
-
-    userPath = [];
-}
-
-// เริ่มต้นนำทางแบบเรียลไทม์
-function startRealTimeRouteNavigation() {
-    if (!currentRoute) {
-        alert('กรุณาเลือกเส้นทางก่อน');
-        return;
-    }
-
-    // เริ่มระบบนำทางปกติ
-    startRouteNavigation();
-
-    // แสดง UI แบบเรียลไทม์
-    document.getElementById('realTimeInfo').classList.remove('d-none');
-    document.getElementById('directionIndicator').classList.remove('d-none');
-    document.getElementById('realTimeControls').classList.remove('d-none');
-
-    // เริ่มติดตามตำแหน่ง
-    startRealTimeNavigation();
-
-    // ขออนุญาตใช้งานเสียง
-    requestAudioPermission();
-}
-
-// หยุดนำทางแบบเรียลไทม์
-function stopRealTimeNavigation() {
-    stopRealTimeTracking();
-
-    // ซ่อน UI แบบเรียลไทม์
-    document.getElementById('realTimeInfo').classList.add('d-none');
-    document.getElementById('directionIndicator').classList.add('d-none');
-    document.getElementById('realTimeControls').classList.add('d-none');
-
-    showNavigationMessage('หยุดการติดตามตำแหน่งเรียลไทม์แล้ว');
-}
-
-// ศูนย์กลางแผนที่บนผู้ใช้
-function centerMapOnUser() {
-    if (userMarker) {
-        const latLng = userMarker.getLatLng();
-        map.setView(latLng, 18);
-    }
-}
-
-// ขออนุญาตใช้งานเสียง
-function requestAudioPermission() {
-    if ('speechSynthesis' in window) {
-        // ทดสอบพูด
-        const utterance = new SpeechSynthesisUtterance('');
-        utterance.volume = 0.01; // เสียงเบามากๆ
-        speechSynthesis.speak(utterance);
-        speechSynthesis.cancel(); // หยุดทันที
-    }
-}
-
-// แสดงข้อความนำทาง
-function showNavigationMessage(message, type = 'info') {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `alert alert-${type} alert-dismissible fade show`;
-    messageDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-
-    // แทรกที่ต้น container
-    const container = document.querySelector('.container');
-    container.insertBefore(messageDiv, container.firstChild);
-
-    // ลบอัตโนมัติหลังจาก 5 วินาที
-    setTimeout(() => {
-        if (messageDiv.parentNode) {
-            messageDiv.remove();
-        }
-    }, 5000);
-}
-
-// อัพเดททิศทาง
-function updateDirection(heading) {
-    const arrow = document.getElementById('directionArrow');
-    if (!arrow) return;
-
-    // แปลงองศาเป็นทิศทาง
-    let direction = '↑';
-    if (heading >= 337.5 || heading < 22.5) direction = '↑';
-    else if (heading >= 22.5 && heading < 67.5) direction = '↗';
-    else if (heading >= 67.5 && heading < 112.5) direction = '→';
-    else if (heading >= 112.5 && heading < 157.5) direction = '↘';
-    else if (heading >= 157.5 && heading < 202.5) direction = '↓';
-    else if (heading >= 202.5 && heading < 247.5) direction = '↙';
-    else if (heading >= 247.5 && heading < 292.5) direction = '←';
-    else if (heading >= 292.5 && heading < 337.5) direction = '↖';
-
-    arrow.textContent = direction;
-    arrow.style.transform = `rotate(${heading}deg)`;
-}
-
-// อัพเดทฟังก์ชัน updateUserPosition
-function updateUserPosition(position) {
-    const userLat = position.coords.latitude;
-    const userLng = position.coords.longitude;
-    const accuracy = position.coords.accuracy;
-    const heading = position.coords.heading;
-    const speed = position.coords.speed;
-
-    // อัพเดทข้อมูล
-    updateUserMarker(userLat, userLng);
-    updateAccuracyCircle(userLat, userLng, accuracy);
-    if (heading) updateDirection(heading);
-    updateSpeed(speed);
-
-    // อัพเดทแผนที่
-    map.setView([userLat, userLng], 18);
-
-    // ตรวจสอบขั้นตอน
-    checkForNextStep(userLat, userLng);
-
-    // อัพเดทข้อมูลนำทาง
-    updateNavigationInfo(position);
-}
-
-// อัพเดทวงกลมแสดงความแม่นยำ
 function updateAccuracyCircle(lat, lng, accuracy) {
-    // ลบวงกลมเก่า
+    // Clear existing circle
     if (window.accuracyCircle) {
         map.removeLayer(window.accuracyCircle);
     }
-
-    // สร้างวงกลมใหม่
+    
+    // Create new accuracy circle
     window.accuracyCircle = L.circle([lat, lng], {
         radius: accuracy,
         color: 'rgba(13, 110, 253, 0.3)',
@@ -994,10 +1132,444 @@ function updateAccuracyCircle(lat, lng, accuracy) {
     }).addTo(map);
 }
 
-// อัพเดทความเร็ว
-function updateSpeed(speed) {
-    if (speed !== null) {
-        const speedKmh = Math.round(speed * 3.6); // แปลง m/s เป็น km/h
-        document.getElementById('currentSpeed').textContent = speedKmh;
+function updateRealtimeStats(position) {
+    if (!currentRoute) return;
+    
+    const toBuilding = buildings.find(b => b.id === currentRoute.to);
+    if (!toBuilding) return;
+    
+    // Calculate remaining distance
+    const remainingDist = calculateDistance(
+        position.coords.latitude,
+        position.coords.longitude,
+        toBuilding.lat,
+        toBuilding.lng
+    );
+    
+    domCache.remainingDistance.textContent = `${Math.round(remainingDist)} ม.`;
+    
+    // Calculate remaining time
+    const remainingTime = Math.round(remainingDist / (CONFIG.WALKING_SPEED * 60));
+    domCache.remainingTime.textContent = `${remainingTime} นาที`;
+    
+    // Update speed if available
+    if (position.coords.speed !== null) {
+        const speedKmh = Math.round(position.coords.speed * 3.6);
+        domCache.currentSpeed.textContent = speedKmh;
     }
 }
+
+function handleGeolocationError(error) {
+    let message = 'GPS Error: ';
+    
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            message = 'ไม่ได้อนุญาตให้เข้าถึงตำแหน่ง';
+            break;
+        case error.POSITION_UNAVAILABLE:
+            message = 'ไม่สามารถรับข้อมูลตำแหน่งได้';
+            break;
+        case error.TIMEOUT:
+            message = 'ขอข้อมูลตำแหน่งนานเกินไป';
+            break;
+        default:
+            message = 'เกิดข้อผิดพลาดกับ GPS';
+            break;
+    }
+    
+    showToast(message, 'warning');
+    stopRealtimeTracking();
+}
+
+function updateRealtimeButton() {
+    if (!domCache.realtimeBtn) return;
+    
+    if (isRealtimeTracking) {
+        domCache.realtimeBtn.innerHTML = '<i class="fas fa-satellite-dish"></i>';
+        domCache.realtimeBtn.classList.remove('btn-outline-info');
+        domCache.realtimeBtn.classList.add('btn-danger');
+        domCache.realtimeBtn.title = 'หยุดติดตามตำแหน่ง';
+    } else {
+        domCache.realtimeBtn.innerHTML = '<i class="fas fa-satellite"></i>';
+        domCache.realtimeBtn.classList.remove('btn-danger');
+        domCache.realtimeBtn.classList.add('btn-outline-info');
+        domCache.realtimeBtn.title = 'ติดตามตำแหน่งเรียลไทม์';
+    }
+}
+
+// ========== 8. SPEECH FUNCTIONS ==========
+function speakInstruction() {
+    if (!speechEnabled || !currentRoute || !currentRoute.instructions) return;
+    
+    const text = currentRoute.instructions[currentStep];
+    speakText(text);
+}
+
+function speakText(text) {
+    if (!('speechSynthesis' in window)) {
+        console.warn('Speech synthesis not supported');
+        return;
+    }
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'th-TH';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    // Speak
+    window.speechSynthesis.speak(utterance);
+}
+
+function toggleSpeech() {
+    speechEnabled = !speechEnabled;
+    
+    // Save preference
+    const prefs = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.USER_PREFERENCES) || '{}');
+    prefs.speechEnabled = speechEnabled;
+    localStorage.setItem(CONFIG.STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(prefs));
+    
+    updateSpeechButton();
+    
+    showToast(speechEnabled ? 'เปิดใช้งานเสียงแล้ว' : 'ปิดใช้งานเสียงแล้ว', 'info');
+}
+
+function updateSpeechButton() {
+    if (!domCache.speakBtn) return;
+    
+    if (speechEnabled) {
+        domCache.speakBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        domCache.speakBtn.title = 'ปิดเสียงคำแนะนำ';
+    } else {
+        domCache.speakBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        domCache.speakBtn.title = 'เปิดเสียงคำแนะนำ';
+    }
+}
+
+// ========== 9. UI HELPER FUNCTIONS ==========
+function showLoading(show) {
+    if (!domCache.loadingOverlay) return;
+    
+    if (show) {
+        domCache.loadingOverlay.style.display = 'flex';
+    } else {
+        setTimeout(() => {
+            domCache.loadingOverlay.style.display = 'none';
+        }, 300);
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toastEl = document.getElementById('liveToast');
+    const toastMessage = document.getElementById('toastMessage');
+    
+    if (!toastEl || !toastMessage) return;
+    
+    // Update message
+    toastMessage.textContent = message;
+    
+    // Update toast class based on type
+    const toast = new bootstrap.Toast(toastEl);
+    
+    // Change background based on type
+    const toastHeader = toastEl.querySelector('.toast-header');
+    if (toastHeader) {
+        const bgClass = {
+            'success': 'bg-success text-white',
+            'danger': 'bg-danger text-white',
+            'warning': 'bg-warning text-dark',
+            'info': 'bg-info text-white'
+        }[type] || 'bg-primary text-white';
+        
+        toastHeader.className = `toast-header ${bgClass}`;
+    }
+    
+    // Show toast
+    toast.show();
+}
+
+function toggleTheme() {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark-mode', darkMode);
+    
+    // Save preference
+    localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, darkMode ? 'dark' : 'light');
+    
+    showToast(darkMode ? 'เปลี่ยนเป็นโหมดกลางคืน' : 'เปลี่ยนเป็นโหมดปกติ', 'info');
+}
+
+function showAbout() {
+    const aboutModal = new bootstrap.Modal(document.getElementById('aboutModal'));
+    aboutModal.show();
+}
+
+// ========== 10. EVENT LISTENERS SETUP ==========
+function setupEventListeners() {
+    // Route selection events
+    if (domCache.fromBuilding) {
+        domCache.fromBuilding.addEventListener('change', updateRouteSelection);
+    }
+    
+    if (domCache.toBuilding) {
+        domCache.toBuilding.addEventListener('change', updateRouteInfo);
+    }
+    
+    // Button events
+    if (domCache.previewBtn) {
+        domCache.previewBtn.addEventListener('click', showRoutePreview);
+    }
+    
+    if (domCache.startNavBtn) {
+        domCache.startNavBtn.addEventListener('click', startNavigation);
+    }
+    
+    if (domCache.prevBtn) {
+        domCache.prevBtn.addEventListener('click', previousStep);
+    }
+    
+    if (domCache.nextBtn) {
+        domCache.nextBtn.addEventListener('click', nextStep);
+    }
+    
+    if (domCache.speakBtn) {
+        domCache.speakBtn.addEventListener('click', toggleSpeech);
+    }
+    
+    if (domCache.realtimeBtn) {
+        domCache.realtimeBtn.addEventListener('click', toggleRealtimeTracking);
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', handleKeyboardShortcuts);
+    
+    // Online/offline detection
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOfflineStatus);
+    
+    // Before unload
+    window.addEventListener('beforeunload', handleBeforeUnload);
+}
+
+function handleKeyboardShortcuts(e) {
+    // Only handle if not in input field
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+        return;
+    }
+    
+    switch(e.key) {
+        case 'ArrowRight':
+            if (!e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                nextStep();
+            }
+            break;
+            
+        case 'ArrowLeft':
+            if (!e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                previousStep();
+            }
+            break;
+            
+        case ' ':
+            if (!e.ctrlKey && !e.altKey) {
+                e.preventDefault();
+                speakInstruction();
+            }
+            break;
+            
+        case 'Escape':
+            if (currentRoute) {
+                e.preventDefault();
+                stopNavigation();
+            }
+            break;
+    }
+}
+
+function handleOnlineStatus() {
+    showToast('เชื่อมต่ออินเทอร์เน็ตแล้ว', 'success');
+}
+
+function handleOfflineStatus() {
+    showToast('กำลังทำงานแบบออฟไลน์', 'warning');
+}
+
+function handleBeforeUnload(e) {
+    if (isRealtimeTracking) {
+        // Stop tracking before leaving
+        stopRealtimeTracking();
+    }
+    
+    // Optional: Save current state
+    // saveCurrentState();
+}
+
+// ========== 11. UTILITY FUNCTIONS ==========
+function showRoutePreview() {
+    const fromId = parseInt(domCache.fromBuilding.value);
+    const toId = parseInt(domCache.toBuilding.value);
+    
+    if (!fromId || !toId) {
+        showToast('กรุณาเลือกเส้นทางก่อน', 'warning');
+        return;
+    }
+    
+    const fromBuilding = buildings.find(b => b.id === fromId);
+    const toBuilding = buildings.find(b => b.id === toId);
+    
+    if (!fromBuilding || !toBuilding) {
+        showToast('ไม่พบข้อมูลอาคาร', 'danger');
+        return;
+    }
+    
+    showRouteOnMap(fromBuilding, toBuilding);
+    showToast('แสดงเส้นทางบนแผนที่เรียบร้อยแล้ว', 'info');
+}
+
+function useMyLocationAsStart() {
+    if (!navigator.geolocation) {
+        showToast('อุปกรณ์ไม่รองรับการระบุตำแหน่ง', 'warning');
+        return;
+    }
+    
+    showLoading(true);
+    
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // Find nearest building
+            const nearestBuilding = findNearestBuilding(lat, lng);
+            
+            if (nearestBuilding) {
+                setBuildingAsStart(nearestBuilding.id);
+                showToast(`ตั้งอาคาร ${nearestBuilding.name} เป็นจุดเริ่มต้น`, 'success');
+            } else {
+                showToast('ไม่พบอาคารใกล้เคียง', 'warning');
+            }
+            
+            showLoading(false);
+        },
+        (error) => {
+            console.error('Geolocation error:', error);
+            showToast('ไม่สามารถระบุตำแหน่งได้', 'danger');
+            showLoading(false);
+        },
+        { timeout: 10000 }
+    );
+}
+
+function findNearestBuilding(lat, lng) {
+    let nearestBuilding = null;
+    let minDistance = Infinity;
+    
+    buildings.forEach(building => {
+        const distance = calculateDistance(lat, lng, building.lat, building.lng);
+        if (distance < minDistance) {
+            minDistance = distance;
+            nearestBuilding = building;
+        }
+    });
+    
+    return nearestBuilding;
+}
+
+function swapBuildings() {
+    const fromValue = domCache.fromBuilding.value;
+    const toValue = domCache.toBuilding.value;
+    
+    if (!fromValue || !toValue) {
+        showToast('กรุณาเลือกทั้งจุดเริ่มต้นและจุดหมาย', 'warning');
+        return;
+    }
+    
+    // Swap values
+    domCache.fromBuilding.value = toValue;
+    domCache.toBuilding.value = fromValue;
+    
+    // Update UI
+    updateRouteSelection();
+    updateRouteInfo();
+    
+    showToast('สลับจุดเริ่มต้นและจุดหมายเรียบร้อยแล้ว', 'info');
+}
+
+function setBuildingAsStart(buildingId) {
+    domCache.fromBuilding.value = buildingId;
+    updateRouteSelection();
+    highlightBuildingOnTable(buildingId);
+}
+
+function setBuildingAsDestination(buildingId) {
+    domCache.toBuilding.value = buildingId;
+    updateRouteInfo();
+    highlightBuildingOnTable(buildingId);
+}
+
+// ========== 12. GLOBAL FUNCTIONS (for HTML onclick) ==========
+// These functions need to be globally accessible for HTML onclick attributes
+window.showAbout = showAbout;
+window.toggleTheme = toggleTheme;
+window.useMyLocationAsStart = useMyLocationAsStart;
+window.swapBuildings = swapBuildings;
+window.setBuildingAsStart = setBuildingAsStart;
+window.setBuildingAsDestination = setBuildingAsDestination;
+window.showRoutePreview = showRoutePreview;
+window.startNavigation = startNavigation;
+window.previousStep = previousStep;
+window.nextStep = nextStep;
+window.speakInstruction = speakInstruction;
+window.toggleRealtimeTracking = toggleRealtimeTracking;
+window.stopNavigation = stopNavigation;
+
+// ========== 13. SERVICE WORKER REGISTRATION ==========
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registered:', registration);
+            })
+            .catch(error => {
+                console.log('ServiceWorker registration failed:', error);
+            });
+    });
+}
+
+// ========== 14. PWA INSTALL PROMPT ==========
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+    
+    // Show install button (optional)
+    // showInstallPromotion();
+});
+
+function installPWA() {
+    if (deferredPrompt) {
+        // Show the install prompt
+        deferredPrompt.prompt();
+        
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+        });
+    }
+}
+
+// ========== 15. INITIALIZATION COMPLETE ==========
+console.log('ระบบนำทางหน่วยงานรัฐ - Initialized successfully');
