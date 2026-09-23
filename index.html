@@ -111,6 +111,46 @@
         </div>
 
         <!-- แผงนำทาง -->
+        <!-- แผงข้อมูลแบบเรียลไทม์ (เพิ่มใน navigationPanel) -->
+        <div id="realTimeInfo" class="real-time-info d-none">
+            <div class="real-time-stats">
+                <div class="real-time-stat">
+                    <div class="value" id="distanceRemaining">-</div>
+                    <div class="label">ระยะทางเหลือ</div>
+                </div>
+                <div class="real-time-stat">
+                    <div class="value" id="timeRemaining">-</div>
+                    <div class="label">เวลาถึงโดยประมาณ</div>
+                </div>
+                <div class="real-time-stat">
+                    <div class="value" id="currentSpeed">0</div>
+                    <div class="label">กม./ชม.</div>
+                </div>
+            </div>
+
+            <div class="progress mt-2" style="height: 6px;">
+                <div id="routeProgress" class="progress-bar bg-success" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- เครื่องหมายทิศทาง -->
+        <div id="directionIndicator" class="direction-indicator d-none">
+            <div class="direction-arrow" id="directionArrow">↑</div>
+        </div>
+
+        <!-- ปุ่มควบคุมแบบเรียลไทม์ -->
+        <div id="realTimeControls" class="real-time-controls d-none">
+            <button class="real-time-btn btn-center-map" onclick="centerMapOnUser()">
+                <i class="fas fa-crosshairs"></i>
+            </button>
+            <button class="real-time-btn btn-stop-tracking" onclick="stopRealTimeNavigation()">
+                <i class="fas fa-stop"></i>
+            </button>
+            <button class="real-time-btn btn-start-tracking" onclick="startRealTimeNavigation()">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+
         <div id="navigationPanel" class="card mt-3 d-none">
             <div class="card-header bg-warning text-dark">
                 <div class="d-flex justify-content-between align-items-center">
