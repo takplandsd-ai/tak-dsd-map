@@ -1,359 +1,1108 @@
 {
-    "unit_name": "กรมส่งเสริมการปกครองท้องถิ่น",
-    "unit_address": "ศูนย์ราชการเฉลิมพระเกียรติ ถนนแจ้งวัฒนะ",
-    "unit_contact": "02-123-4567",
+  "department_info": {
+    "name": "กรมส่งเสริมการปกครองท้องถิ่น",
+    "full_name": "กรมส่งเสริมการปกครองท้องถิ่น กระทรวงมหาดไทย",
+    "address": "เลขที่ 1 อาคารรัฐประศาสนภักดี ศูนย์ราชการเฉลิมพระเกียรติ ถนนแจ้งวัฒนะ แขวงทุ่งสองห้อง เขตหลักสี่ กรุงเทพมหานคร 10210",
+    "contact": {
+      "phone": "02-123-4567",
+      "fax": "02-123-4568",
+      "email": "contact@dla.go.th",
+      "website": "https://www.dla.go.th"
+    },
+    "working_hours": {
+      "weekdays": "08:30 - 16:30 น.",
+      "weekends": "หยุดราชการ",
+      "public_service": "08:30 - 15:30 น."
+    }
+  },
+  
+  "system_info": {
+    "version": "3.0",
     "last_updated": "2026-09-02",
-    "buildings": [
+    "data_source": "ข้อมูลภายในหน่วยงาน",
+    "coordinates_system": "WGS84 (Google Maps)",
+    "distance_unit": "เมตร",
+    "time_unit": "นาที"
+  },
+  
+  "buildings": [
+    {
+      "id": 1,
+      "code": "B01",
+      "name": "อาคารรัฐประศาสนภักดี",
+      "name_en": "Ratprachasunpakdee Building",
+      "description": "อาคารหลักสำหรับบริหารงานระดับสูงและห้องประชุมสำคัญ",
+      "category": "อาคารหลัก",
+      "sub_category": "สำนักงานบริหาร",
+      "coordinates": {
+        "lat": 13.8765,
+        "lng": 100.5520
+      },
+      "floors": 8,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramp": true,
+        "priority_parking": true
+      },
+      "services": [
+        "สำนักงานผู้บริหารระดับสูง",
+        "ห้องประชุมผู้บริหาร",
+        "ฝ่ายสารบรรณ",
+        "ฝ่ายทรัพยากรบุคคล",
+        "ฝ่ายการเงินและบัญชี",
+        "ศูนย์ข้อมูลสารสนเทศ"
+      ],
+      "contact": {
+        "internal_phone": "4001",
+        "external_phone": "02-123-4001",
+        "email": "building1@dla.go.th"
+      },
+      "opening_hours": {
+        "administration": "08:30 - 16:30 น.",
+        "service": "09:00 - 15:30 น.",
+        "remark": "หยุดวันหยุดราชการ"
+      },
+      "amenities": [
+        "ลิฟต์ 4 ตัว",
+        "บันไดเลื่อน",
+        "ห้องน้ำทุกชั้น",
+        "จุดชาร์จโทรศัพท์",
+        "พื้นที่พักผ่อน",
+        "ตู้กดน้ำดื่ม"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/198754/FFFFFF?text=อาคารรัฐประศาสนภักดี",
+        "entrance": "https://via.placeholder.com/800x600/0d6efd/FFFFFF?text=ทางเข้าหลัก",
+        "map": "https://via.placeholder.com/800x600/6c757d/FFFFFF?text=แผนผังอาคาร"
+      },
+      "notes": "อาคารสีขาว 8 ชั้น สูงที่สุดในหน่วยงาน"
+    },
+    
+    {
+      "id": 2,
+      "code": "B02",
+      "name": "ศูนย์บริการประชาชน",
+      "name_en": "Public Service Center",
+      "description": "ให้บริการบัตรประชาชน ใบอนุญาตต่าง ๆ และงานทะเบียนราษฎร์",
+      "category": "บริการ",
+      "sub_category": "บริการประชาชน",
+      "coordinates": {
+        "lat": 13.8760,
+        "lng": 100.5515
+      },
+      "floors": 3,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramp": true,
+        "priority_parking": true
+      },
+      "services": [
+        "ทำบัตรประชาชน",
+        "ทะเบียนราษฎร์",
+        "ใบอนุญาตขับขี่",
+        "ทะเบียนรถ",
+        "งานสารบัตร",
+        "ขอรับเอกสารราชการ"
+      ],
+      "contact": {
+        "internal_phone": "4002",
+        "external_phone": "02-123-4002",
+        "email": "service@dla.go.th"
+      },
+      "opening_hours": {
+        "administration": "08:30 - 16:30 น.",
+        "service": "08:30 - 15:30 น.",
+        "remark": "รับบัตรคิวก่อน 15:00 น."
+      },
+      "amenities": [
+        "ที่นั่งรอบริการ",
+        "จุดบริการข้อมูล",
+        "เครื่องถ่ายเอกสาร",
+        "ตู้ ATM",
+        "จุดให้คำปรึกษา",
+        "บริการ Wi-Fi"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/0d6efd/FFFFFF?text=ศูนย์บริการประชาชน",
+        "service_area": "https://via.placeholder.com/800x600/198754/FFFFFF?text=จุดบริการ",
+        "waiting_area": "https://via.placeholder.com/800x600/ffc107/000000?text=ที่นั่งรอ"
+      },
+      "notes": "อาคารสีฟ้า 3 ชั้น อยู่ติดลานจอดรถ"
+    },
+    
+    {
+      "id": 3,
+      "code": "B03",
+      "name": "หอประชุมใหญ่",
+      "name_en": "Grand Conference Hall",
+      "description": "สำหรับการประชุมสัมมนา งานอบรม และกิจกรรมสำคัญของหน่วยงาน",
+      "category": "หอประชุม",
+      "sub_category": "สถานที่จัดงาน",
+      "coordinates": {
+        "lat": 13.8758,
+        "lng": 100.5525
+      },
+      "floors": 1,
+      "capacity": 500,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramp": true,
+        "priority_parking": true,
+        "hearing_assistance": true
+      },
+      "facilities": [
+        "ระบบเสียงครบวงจร",
+        "จอภาพขนาดใหญ่",
+        "เครื่องฉายภาพ",
+        "ระบบแสงสี",
+        "ห้องเตรียมผู้บรรยาย",
+        "ห้องบริการอาหาร"
+      ],
+      "contact": {
+        "internal_phone": "4003",
+        "external_phone": "02-123-4003",
+        "email": "conference@dla.go.th",
+        "booking_contact": "ฝ่ายประชาสัมพันธ์ ชั้น 1"
+      },
+      "opening_hours": {
+        "weekdays": "07:00 - 20:00 น.",
+        "weekends": "จองล่วงหน้า",
+        "remark": "ต้องจองล่วงหน้าอย่างน้อย 3 วันทำการ"
+      },
+      "amenities": [
+        "ที่นั่งปรับระดับ",
+        "โต๊ะประชุม",
+        "เครื่องดื่มบริการ",
+        "จุดชาร์จอุปกรณ์",
+        "ห้องพักผ่อน",
+        "ลานจอดรถพิเศษ"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/ffc107/000000?text=หอประชุมใหญ่",
+        "stage": "https://via.placeholder.com/800x600/6c757d/FFFFFF?text=เวทีหลัก",
+        "seating": "https://via.placeholder.com/800x600/198754/FFFFFF?text=ที่นั่งประชุม"
+      },
+      "notes": "อาคารทรงกลมสีทอง อยู่กลางสวนหย่อม"
+    },
+    
+    {
+      "id": 4,
+      "code": "B04",
+      "name": "ศูนย์ข้อมูลข่าวสาร",
+      "name_en": "Information Center",
+      "description": "บริการข้อมูลข่าวสารราชการ เอกสารอ้างอิง และงานห้องสมุด",
+      "category": "ข้อมูล",
+      "sub_category": "ศูนย์ข้อมูล",
+      "coordinates": {
+        "lat": 13.8762,
+        "lng": 100.5512
+      },
+      "floors": 2,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramp": true,
+        "priority_parking": false
+      },
+      "services": [
+        "ค้นหาข้อมูลราชการ",
+        "เอกสารอ้างอิง",
+        "บริการอินเทอร์เน็ต",
+        "ถ่ายเอกสาร",
+        "สแกนเอกสาร",
+        "พิมพ์งาน"
+      ],
+      "contact": {
+        "internal_phone": "4004",
+        "external_phone": "02-123-4004",
+        "email": "library@dla.go.th"
+      },
+      "opening_hours": {
+        "monday_friday": "08:30 - 16:00 น.",
+        "saturday": "09:00 - 12:00 น.",
+        "sunday": "ปิดบริการ",
+        "remark": "หยุดวันนักขัตฤกษ์"
+      },
+      "amenities": [
+        "คอมพิวเตอร์บริการ",
+        "พื้นที่อ่านหนังสือ",
+        "เครื่องพิมพ์",
+        "เครื่องถ่ายเอกสาร",
+        "พื้นที่กลุ่มศึกษา",
+        "บริการ Wi-Fi"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/6f42c1/FFFFFF?text=ศูนย์ข้อมูลข่าวสาร",
+        "reading_area": "https://via.placeholder.com/800x600/198754/FFFFFF?text=พื้นที่อ่านหนังสือ",
+        "computer_area": "https://via.placeholder.com/800x600/0d6efd/FFFFFF?text=คอมพิวเตอร์บริการ"
+      },
+      "notes": "อาคารสีม่วง 2 ชั้น อยู่ติดกับสวนหย่อม"
+    },
+    
+    {
+      "id": 5,
+      "code": "B05",
+      "name": "อาคารโรงอาหาร",
+      "name_en": "Cafeteria Building",
+      "description": "บริการอาหารเครื่องดื่มสำหรับเจ้าหน้าที่และประชาชน",
+      "category": "บริการ",
+      "sub_category": "โรงอาหาร",
+      "coordinates": {
+        "lat": 13.8755,
+        "lng": 100.5510
+      },
+      "floors": 1,
+      "capacity": 200,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramp": true,
+        "priority_parking": false
+      },
+      "services": [
+        "อาหารจานเดียว",
+        "อาหารตามสั่ง",
+        "เครื่องดื่ม",
+        "ของว่าง",
+        "บริการจัดเลี้ยง",
+        "อาหารสำหรับผู้ป่วย"
+      ],
+      "contact": {
+        "internal_phone": "4005",
+        "external_phone": "02-123-4005",
+        "email": "cafeteria@dla.go.th"
+      },
+      "opening_hours": {
+        "breakfast": "07:00 - 09:30 น.",
+        "lunch": "10:30 - 14:00 น.",
+        "dinner": "ปิดบริการ",
+        "remark": "ปิดวันอาทิตย์และวันหยุดราชการ"
+      },
+      "amenities": [
+        "ที่นั่งในร่ม",
+        "ที่นั่่งกลางแจ้ง",
+        "เครื่องทำน้ำเย็น",
+        "ไมโครเวฟบริการ",
+        "อ่างล้างมือ",
+        "ถังขยะแยกประเภท"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/fd7e14/FFFFFF?text=อาคารโรงอาหาร",
+        "food_stalls": "https://via.placeholder.com/800x600/198754/FFFFFF?text=ร้านอาหาร",
+        "seating_area": "https://via.placeholder.com/800x600/6c757d/FFFFFF?text=ที่นั่งรับประทาน"
+      },
+      "notes": "อาคารสีส้ม อยู่ติดลานจอดรถด้านหลัง"
+    },
+    
+    {
+      "id": 6,
+      "code": "B06",
+      "name": "อาคารฝึกอบรม",
+      "name_en": "Training Building",
+      "description": "ศูนย์ฝึกอบรมและพัฒนาบุคลากรของกรมและหน่วยงานในเครือข่าย",
+      "category": "ฝึกอบรม",
+      "sub_category": "ศูนย์ฝึกอบรม",
+      "coordinates": {
+        "lat": 13.8768,
+        "lng": 100.5508
+      },
+      "floors": 4,
+      "classrooms": 12,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramp": true,
+        "priority_parking": true
+      },
+      "facilities": [
+        "ห้องอบรมขนาดเล็ก (30 คน)",
+        "ห้องอบรมขนาดกลาง (60 คน)",
+        "ห้องอบรมขนาดใหญ่ (100 คน)",
+        "ห้องสัมมนา",
+        "ห้องปฏิบัติการคอมพิวเตอร์",
+        "ศูนย์สื่อการสอน"
+      ],
+      "contact": {
+        "internal_phone": "4006",
+        "external_phone": "02-123-4006",
+        "email": "training@dla.go.th",
+        "booking_contact": "ฝ่ายฝึกอบรม ชั้น 1"
+      },
+      "opening_hours": {
+        "administration": "08:30 - 16:30 น.",
+        "training": "ตามตารางอบรม",
+        "remark": "จองห้องล่วงหน้าอย่างน้อย 7 วัน"
+      },
+      "amenities": [
+        "คอมพิวเตอร์สำหรับอบรม",
+        "โปรเจคเตอร์ทุกห้อง",
+        "ระบบเสียง",
+        "บริการเครื่องดื่ม",
+        "พื้นที่พักระหว่างอบรม",
+        "ล็อกเกอร์เก็บของ"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/20c997/FFFFFF?text=อาคารฝึกอบรม",
+        "classroom": "https://via.placeholder.com/800x600/6c757d/FFFFFF?text=ห้องอบรม",
+        "computer_lab": "https://via.placeholder.com/800x600/0d6efd/FFFFFF?text=ห้องคอมพิวเตอร์"
+      },
+      "notes": "อาคารสีเขียวอ่อน 4 ชั้น อยู่ด้านหลังสุดของหน่วยงาน"
+    },
+    
+    {
+      "id": 7,
+      "code": "B07",
+      "name": "อาคารสันทนาการ",
+      "name_en": "Recreation Building",
+      "description": "สถานที่ออกกำลังกายและกิจกรรมสันทนาการสำหรับเจ้าหน้าที่",
+      "category": "บริการ",
+      "sub_category": "สันทนาการ",
+      "coordinates": {
+        "lat": 13.8752,
+        "lng": 100.5528
+      },
+      "floors": 2,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": true,
+        "ramp": true,
+        "priority_parking": true
+      },
+      "facilities": [
+        "ห้องออกกำลังกาย",
+        "สระว่ายน้ำ",
+        "สนามเทนนิส",
+        "สนามบาสเกตบอล",
+        "ห้องซาวน่า",
+        "ห้องเปลี่ยนเสื้อผ้า"
+      ],
+      "contact": {
+        "internal_phone": "4007",
+        "external_phone": "02-123-4007",
+        "email": "recreation@dla.go.th"
+      },
+      "opening_hours": {
+        "weekdays": "06:00 - 20:00 น.",
+        "weekends": "08:00 - 18:00 น.",
+        "holidays": "09:00 - 17:00 น.",
+        "remark": "สำหรับเจ้าหน้าที่และครอบครัวเท่านั้น"
+      },
+      "amenities": [
+        "เครื่องออกกำลังกาย",
+        "อุปกรณ์กีฬาให้ยืม",
+        "ตู้ล็อกเกอร์",
+        "ห้องอาบน้ำ",
+        "จุดขายเครื่องดื่ม",
+        "พื้นที่นั่งพัก"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/d63384/FFFFFF?text=อาคารสันทนาการ",
+        "gym": "https://via.placeholder.com/800x600/6c757d/FFFFFF?text=ห้องออกกำลังกาย",
+        "swimming_pool": "https://via.placeholder.com/800x600/0d6efd/FFFFFF?text=สระว่ายน้ำ"
+      },
+      "notes": "อาคารสีชมพู อยู่ติดกับสวนสาธารณะภายในหน่วยงาน"
+    },
+    
+    {
+      "id": 8,
+      "code": "B08",
+      "name": "ศูนย์ดูแลเด็ก",
+      "name_en": "Child Care Center",
+      "description": "ศูนย์ดูแลเด็กสำหรับบุตรหลานของเจ้าหน้าที่ระหว่างเวลาปฏิบัติงาน",
+      "category": "บริการ",
+      "sub_category": "ศูนย์เด็ก",
+      "coordinates": {
+        "lat": 13.8769,
+        "lng": 100.5530
+      },
+      "floors": 1,
+      "capacity": 50,
+      "accessibility": {
+        "wheelchair": true,
+        "elevator": false,
+        "ramp": true,
+        "priority_parking": true
+      },
+      "services": [
+        "ดูแลเด็กอายุ 6 เดือน - 6 ปี",
+        "กิจกรรมพัฒนาการ",
+        "อาหารกลางวัน",
+        "อาหารว่าง",
+        "นอนกลางวัน",
+        "รับ-ส่งตามเวลา"
+      ],
+      "contact": {
+        "internal_phone": "4008",
+        "external_phone": "02-123-4008",
+        "email": "childcare@dla.go.th"
+      },
+      "opening_hours": {
+        "regular": "07:30 - 17:00 น.",
+        "early_drop": "07:00 น.",
+        "late_pickup": "17:30 น.",
+        "remark": "สำหรับบุตรหลานเจ้าหน้าที่เท่านั้น ต้องลงทะเบียนล่วงหน้า"
+      },
+      "amenities": [
+        "ห้องเล่นของเด็ก",
+        "ห้องนอน",
+        "ห้องอาหารเด็ก",
+        "สนามเด็กเล่น",
+        "ห้องพยาบาล",
+        "พื้นที่สำหรับผู้ปกครอง"
+      ],
+      "images": {
+        "main": "https://via.placeholder.com/800x600/20c997/FFFFFF?text=ศูนย์ดูแลเด็ก",
+        "playroom": "https://via.placeholder.com/800x600/ffc107/000000?text=ห้องเล่นของเด็ก",
+        "playground": "https://via.placeholder.com/800x600/198754/FFFFFF?text=สนามเด็กเล่น"
+      },
+      "notes": "อาคารสีเขียวสด 1 ชั้น อยู่ริมสวน ปลอดภัยสำหรับเด็ก"
+    }
+  ],
+  
+  "routes": [
+    {
+      "id": "1-2",
+      "code": "R0102",
+      "from": 1,
+      "to": 2,
+      "name": "สำนักงานกลาง → ศูนย์บริการ",
+      "name_en": "Main Office → Service Center",
+      "description": "เส้นทางหลักจากอาคารบริหารไปยังจุดบริการประชาชน",
+      "distance": 120,
+      "distance_display": "120 เมตร",
+      "estimated_time": 2,
+      "time_display": "2 นาที",
+      "path_type": "ทางเดินในร่ม",
+      "difficulty": "ง่าย",
+      "accessibility": {
+        "wheelchair": true,
+        "covered": true,
+        "lighting": true,
+        "emergency_call": true
+      },
+      "instructions": [
         {
-            "id": 1,
-            "name": "อาคารรัฐประศาสนภักดี",
-            "description": "อาคารหลักสำหรับบริหารงานและบริการประชาชน",
-            "lat": 13.8765,
-            "lng": 100.5520,
-            "category": "อาคารหลัก",
-            "contact": "02-123-4001",
-            "opening_hours": "08:30-16:30 น.",
-            "services": [
-                "บริหารงาน",
-                "ผู้อำนวยการ",
-                "ฝ่ายบุคคล"
-            ],
-            "floors": 8,
-            "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop"
+          "step": 1,
+          "instruction": "ออกจากอาคาร 1 ทางประตูหน้าชั้น 1",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางออกอาคาร1",
+          "distance_from_start": 0,
+          "estimated_time": 0
         },
         {
-            "id": 2,
-            "name": "ศูนย์บริการประชาชน",
-            "description": "ให้บริการบัตรประชาชน ใบอนุญาตต่าง ๆ",
-            "lat": 13.8760,
-            "lng": 100.5515,
-            "category": "บริการ",
-            "contact": "02-123-4002",
-            "opening_hours": "08:30-15:30 น.",
-            "services": [
-                "ทำบัตรประชาชน",
-                "ทะเบียนราษฎร์",
-                "ใบขับขี่",
-                "งานทะเบียน"
-            ],
-            "floors": 3,
-            "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop"
+          "step": 2,
+          "instruction": "เดินตรงไปตามทางเดินกระจก 50 เมตร",
+          "image": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=ทางเดินกระจก",
+          "distance_from_start": 50,
+          "estimated_time": 1
         },
         {
-            "id": 3,
-            "name": "หอประชุมใหญ่",
-            "description": "สำหรับการประชุมสัมมนาและกิจกรรมสำคัญ",
-            "lat": 13.8758,
-            "lng": 100.5525,
-            "category": "หอประชุม",
-            "contact": "02-123-4003",
-            "opening_hours": "จองล่วงหน้า",
-            "services": [
-                "ห้องประชุม 500 ที่นั่ง",
-                "ระบบเสียง",
-                "เครื่องฉาย"
-            ],
-            "capacity": 500,
-            "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=300&fit=crop"
+          "step": 3,
+          "instruction": "เลี้ยวขวาที่ป้ายบอกทางสีเขียว",
+          "image": "https://via.placeholder.com/400x300/198754/FFFFFF?text=ป้ายบอกทาง",
+          "distance_from_start": 70,
+          "estimated_time": 1.5
         },
         {
-            "id": 4,
-            "name": "ศูนย์ข้อมูลข่าวสาร",
-            "description": "บริการข้อมูลข่าวสารราชการและเอกสาร",
-            "lat": 13.8762,
-            "lng": 100.5512,
-            "category": "ข้อมูล",
-            "contact": "02-123-4004",
-            "opening_hours": "08:30-16:00 น.",
-            "services": [
-                "ค้นหาข้อมูล",
-                "เอกสารราชการ",
-                "อินเทอร์เน็ต",
-                "ถ่ายเอกสาร"
-            ],
-            "floors": 2,
-            "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop"
-        },
-        {
-            "id": 5,
-            "name": "อาคารโรงอาหาร",
-            "description": "บริการอาหารเครื่องดื่มสำหรับเจ้าหน้าที่และประชาชน",
-            "lat": 13.8755,
-            "lng": 100.5510,
-            "category": "บริการ",
-            "contact": "02-123-4005",
-            "opening_hours": "07:00-14:00 น.",
-            "services": [
-                "อาหารจานเดียว",
-                "เครื่องดื่ม",
-                "ของว่าง"
-            ],
-            "seats": 200,
-            "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop"
-        },
-        {
-            "id": 6,
-            "name": "อาคารฝึกอบรม",
-            "description": "ศูนย์ฝึกอบรมและพัฒนาบุคลากร",
-            "lat": 13.8768,
-            "lng": 100.5508,
-            "category": "ฝึกอบรม",
-            "contact": "02-123-4006",
-            "opening_hours": "08:30-16:30 น.",
-            "services": [
-                "ห้องอบรม",
-                "ห้องสัมมนา",
-                "อุปกรณ์ฝึกอบรม"
-            ],
-            "classrooms": 10,
-            "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop"
+          "step": 4,
+          "instruction": "เดินตรงต่ออีก 50 เมตร ถึงอาคาร 2",
+          "image": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=ทางเข้าอาคาร2",
+          "distance_from_start": 120,
+          "estimated_time": 2
         }
+      ],
+      "landmarks": [
+        {
+          "name": "ทางเดินกระจก",
+          "description": "ทางเดินมีหลังคากระจกตลอดทาง",
+          "distance_from_start": 25
+        },
+        {
+          "name": "ป้ายบอกทางสีเขียว",
+          "description": "ป้ายบอกทิศทางไปศูนย์บริการ",
+          "distance_from_start": 70
+        },
+        {
+          "name": "ตู้ไปรษณีย์",
+          "description": "ตู้ไปรษณีย์สีแดงทางขวามือ",
+          "distance_from_start": 90
+        }
+      ],
+      "images": {
+        "overview": "https://via.placeholder.com/800x600/198754/FFFFFF?text=เส้นทาง1-2",
+        "starting_point": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=จุดเริ่มต้น",
+        "key_point": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=จุดสำคัญ"
+      },
+      "notes": "มีหลังคาตลอดทาง ปลอดภัยจากแดดและฝน",
+      "alternative_routes": [
+        {
+          "id": "1-2-alt",
+          "description": "เส้นทางลัดผ่านลานจอดรถ",
+          "distance": 100,
+          "time": 1.5,
+          "notes": "ไม่มีหลังคา แต่ระยะทางสั้นกว่า"
+        }
+      ]
+    },
+    
+    {
+      "id": "2-3",
+      "code": "R0203",
+      "from": 2,
+      "to": 3,
+      "name": "ศูนย์บริการ → หอประชุม",
+      "name_en": "Service Center → Conference Hall",
+      "description": "เส้นทางจากจุดบริการประชาชนไปยังหอประชุมใหญ่",
+      "distance": 180,
+      "distance_display": "180 เมตร",
+      "estimated_time": 4,
+      "time_display": "4 นาที",
+      "path_type": "ทางเดินกลางแจ้ง",
+      "difficulty": "ปานกลาง",
+      "accessibility": {
+        "wheelchair": true,
+        "covered": false,
+        "lighting": true,
+        "emergency_call": true
+      },
+      "instructions": [
+        {
+          "step": 1,
+          "instruction": "ออกจากอาคาร 2 ทางประตูด้านข้าง",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางออกอาคาร2",
+          "distance_from_start": 0,
+          "estimated_time": 0
+        },
+        {
+          "step": 2,
+          "instruction": "เดินตรงไปตามทางเดินหินอ่อน 80 เมตร",
+          "image": "https://via.placeholder.com/400x300/fd7e14/FFFFFF?text=ทางเดินหินอ่อน",
+          "distance_from_start": 80,
+          "estimated_time": 2
+        },
+        {
+          "step": 3,
+          "instruction": "เลี้ยวขวาที่สวนน้ำพุทรงกลม",
+          "image": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=สวนน้ำพุ",
+          "distance_from_start": 100,
+          "estimated_time": 2.5
+        },
+        {
+          "step": 4,
+          "instruction": "เดินตรงต่อผ่านสวนหย่อม 60 เมตร",
+          "image": "https://via.placeholder.com/400x300/198754/FFFFFF?text=สวนหย่อม",
+          "distance_from_start": 160,
+          "estimated_time": 3.5
+        },
+        {
+          "step": 5,
+          "instruction": "เลี้ยวซ้ายที่ทางแยก หอประชุมอยู่ด้านหน้า",
+          "image": "https://via.placeholder.com/400x300/ffc107/000000?text=ทางเข้าหอประชุม",
+          "distance_from_start": 180,
+          "estimated_time": 4
+        }
+      ],
+      "landmarks": [
+        {
+          "name": "ทางเดินหินอ่อน",
+          "description": "ทางเดินปูหินอ่อนสีขาว",
+          "distance_from_start": 40
+        },
+        {
+          "name": "สวนน้ำพุทรงกลม",
+          "description": "น้ำพุกลางสวนทรงกลม จุดพักผ่อน",
+          "distance_from_start": 100
+        },
+        {
+          "name": "สวนหย่อมดอกไม้",
+          "description": "สวนดอกไม้สวยงามริมทางเดิน",
+          "distance_from_start": 130
+        },
+        {
+          "name": "ป้ายหอประชุมใหญ่",
+          "description": "ป้ายสีทองตัวใหญ่",
+          "distance_from_start": 175
+        }
+      ],
+      "images": {
+        "overview": "https://via.placeholder.com/800x600/0d6efd/FFFFFF?text=เส้นทาง2-3",
+        "fountain": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=สวนน้ำพุ",
+        "garden": "https://via.placeholder.com/400x300/198754/FFFFFF?text=สวนดอกไม้"
+      },
+      "notes": "เส้นทางสวยงามผ่านสวน ควรเตรียมร่มกันแดด",
+      "weather_notes": {
+        "rain": "มีทางลัดในร่มได้ที่อาคาร 4",
+        "hot": "มีต้นไม้ให้ร่มเงาบางช่วง",
+        "night": "มีไฟส่องทางตลอดเส้นทาง"
+      }
+    },
+    
+    {
+      "id": "2-6",
+      "code": "R0206",
+      "from": 2,
+      "to": 6,
+      "name": "ศูนย์บริการ → อาคารฝึกอบรม",
+      "name_en": "Service Center → Training Building",
+      "description": "เส้นทางจากจุดบริการไปยังศูนย์ฝึกอบรมด้านหลังหน่วยงาน",
+      "distance": 250,
+      "distance_display": "250 เมตร",
+      "estimated_time": 5,
+      "time_display": "5 นาที",
+      "path_type": "ทางเดินผสม",
+      "difficulty": "ง่าย",
+      "accessibility": {
+        "wheelchair": true,
+        "covered": true,
+        "lighting": true,
+        "emergency_call": true
+      },
+      "instructions": [
+        {
+          "step": 1,
+          "instruction": "ออกจากอาคาร 2 ทางประตูหลัง",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางออกหลังอาคาร2",
+          "distance_from_start": 0,
+          "estimated_time": 0
+        },
+        {
+          "step": 2,
+          "instruction": "เดินไปทางลานจอดรถด้านซ้าย 50 เมตร",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ลานจอดรถ",
+          "distance_from_start": 50,
+          "estimated_time": 1
+        },
+        {
+          "step": 3,
+          "instruction": "เลี้ยวซ้ายที่ทางแยกแรก",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางแยก",
+          "distance_from_start": 70,
+          "estimated_time": 1.5
+        },
+        {
+          "step": 4,
+          "instruction": "เดินผ่านอาคารบริหาร 100 เมตร",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=อาคารบริหาร",
+          "distance_from_start": 170,
+          "estimated_time": 3.5
+        },
+        {
+          "step": 5,
+          "instruction": "เลี้ยวขวาที่ทางเดินมีหลังคาสีฟ้า",
+          "image": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=ทางเดินหลังคาสีฟ้า",
+          "distance_from_start": 200,
+          "estimated_time": 4
+        },
+        {
+          "step": 6,
+          "instruction": "เดินตรงไปอีก 50 เมตร ถึงอาคารฝึกอบรม",
+          "image": "https://via.placeholder.com/400x300/20c997/FFFFFF?text=ทางเข้าอาคารฝึกอบรม",
+          "distance_from_start": 250,
+          "estimated_time": 5
+        }
+      ],
+      "landmarks": [
+        {
+          "name": "ลานจอดรถ B",
+          "description": "ลานจอดรถสำหรับเจ้าหน้าที่",
+          "distance_from_start": 50
+        },
+        {
+          "name": "อาคารบริหาร",
+          "description": "อาคารสีเทา 5 ชั้น",
+          "distance_from_start": 120
+        },
+        {
+          "name": "ทางเดินหลังคาสีฟ้า",
+          "description": "ทางเดินมีหลังคาสีฟ้ายาว 50 เมตร",
+          "distance_from_start": 200
+        },
+        {
+          "name": "ป้ายอาคารฝึกอบรม",
+          "description": "ป้ายสีเขียวอ่อน",
+          "distance_from_start": 240
+        }
+      ],
+      "images": {
+        "overview": "https://via.placeholder.com/800x600/20c997/FFFFFF?text=เส้นทาง2-6",
+        "parking": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ลานจอดรถ",
+        "covered_walkway": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=ทางเดินหลังคา"
+      },
+      "notes": "มีทางเดินหลังคาส่วนใหญ่ ปลอดภัยจากสภาพอากาศ",
+      "alternative_routes": [
+        {
+          "id": "2-6-scenic",
+          "description": "เส้นทางชมสวน",
+          "distance": 300,
+          "time": 6,
+          "notes": "ผ่านสวนสวย แต่ระยะทางไกลกว่า"
+        }
+      ]
+    },
+    
+    {
+      "id": "3-6",
+      "code": "R0306",
+      "from": 3,
+      "to": 6,
+      "name": "หอประชุม → อาคารฝึกอบรม",
+      "name_en": "Conference Hall → Training Building",
+      "description": "เส้นทางเชื่อมต่อระหว่างสถานที่จัดงานกับศูนย์ฝึกอบรม",
+      "distance": 300,
+      "distance_display": "300 เมตร",
+      "estimated_time": 6,
+      "time_display": "6 นาที",
+      "path_type": "ทางเดินสวน",
+      "difficulty": "ง่าย",
+      "accessibility": {
+        "wheelchair": true,
+        "covered": false,
+        "lighting": true,
+        "emergency_call": true
+      },
+      "instructions": [
+        {
+          "step": 1,
+          "instruction": "ออกจากหอประชุมทางประตูด้านข้าง",
+          "image": "https://via.placeholder.com/400x300/ffc107/000000?text=ทางออกหอประชุม",
+          "distance_from_start": 0,
+          "estimated_time": 0
+        },
+        {
+          "step": 2,
+          "instruction": "เดินลงบันไดหรือใช้ทางลาดด้านขวา",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางลาด",
+          "distance_from_start": 20,
+          "estimated_time": 0.5
+        },
+        {
+          "step": 3,
+          "instruction": "เลี้ยวซ้ายเข้าสวนสาธารณะภายใน",
+          "image": "https://via.placeholder.com/400x300/198754/FFFFFF?text=ทางเข้าสวน",
+          "distance_from_start": 50,
+          "estimated_time": 1
+        },
+        {
+          "step": 4,
+          "instruction": "เดินตามทางเดินรอบสวน 180 เมตร",
+          "image": "https://via.placeholder.com/400x300/198754/FFFFFF?text=ทางเดินในสวน",
+          "distance_from_start": 230,
+          "estimated_time": 4.5
+        },
+        {
+          "step": 5,
+          "instruction": "เลี้ยวขวาที่ทางแยกออกจากสวน",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางออกสวน",
+          "distance_from_start": 250,
+          "estimated_time": 5
+        },
+        {
+          "step": 6,
+          "instruction": "เดินตรงไป 50 เมตร ถึงอาคารฝึกอบรม",
+          "image": "https://via.placeholder.com/400x300/20c997/FFFFFF?text=ทางเข้าอาคารฝึกอบรม",
+          "distance_from_start": 300,
+          "estimated_time": 6
+        }
+      ],
+      "landmarks": [
+        {
+          "name": "ทางลาดหอประชุม",
+          "description": "ทางลาดสำหรับรถเข็นและผู้สูงอายุ",
+          "distance_from_start": 20
+        },
+        {
+          "name": "ทางเข้าสวนสาธารณะ",
+          "description": "ประตูโค้งเข้าสวน",
+          "distance_from_start": 50
+        },
+        {
+          "name": "สระน้ำสวน",
+          "description": "สระน้ำกลางสวนมีปลาคาร์ป",
+          "distance_from_start": 150
+        },
+        {
+          "name": "ศาลาพักผ่อน",
+          "description": "ศาลาไม้สำหรับนั่งพัก",
+          "distance_from_start": 200
+        }
+      ],
+      "images": {
+        "overview": "https://via.placeholder.com/800x600/198754/FFFFFF?text=เส้นทาง3-6",
+        "garden_entrance": "https://via.placeholder.com/400x300/198754/FFFFFF?text=ทางเข้าสวน",
+        "pond": "https://via.placeholder.com/400x300/0d6efd/FFFFFF?text=สระน้ำสวน"
+      },
+      "notes": "เส้นทางสวยงาม เหมาะสำหรับเดินชมสวน",
+      "weather_notes": {
+        "rain": "ไม่แนะนำให้ใช้เส้นทางนี้เมื่อฝนตก",
+        "hot": "มีร่มไม้ให้ความร่มรื่น",
+        "evening": "สวยงามเป็นพิเศษในช่วงเย็น"
+      }
+    },
+    
+    {
+      "id": "1-5",
+      "code": "R0105",
+      "from": 1,
+      "to": 5,
+      "name": "สำนักงานกลาง → โรงอาหาร",
+      "name_en": "Main Office → Cafeteria",
+      "description": "เส้นทางจากอาคารหลักไปยังโรงอาหาร",
+      "distance": 200,
+      "distance_display": "200 เมตร",
+      "estimated_time": 4,
+      "time_display": "4 นาที",
+      "path_type": "ทางเดินลัด",
+      "difficulty": "ง่าย",
+      "accessibility": {
+        "wheelchair": true,
+        "covered": false,
+        "lighting": true,
+        "emergency_call": false
+      },
+      "instructions": [
+        {
+          "step": 1,
+          "instruction": "ออกจากอาคาร 1 ทางประตูหลังชั้น 1",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางออกหลังอาคาร1",
+          "distance_from_start": 0,
+          "estimated_time": 0
+        },
+        {
+          "step": 2,
+          "instruction": "เดินลงบันไดหรือใช้ทางลาด",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางลาดบันได",
+          "distance_from_start": 20,
+          "estimated_time": 0.5
+        },
+        {
+          "step": 3,
+          "instruction": "เลี้ยวขวาเข้าลานอเนกประสงค์",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ลานอเนกประสงค์",
+          "distance_from_start": 50,
+          "estimated_time": 1
+        },
+        {
+          "step": 4,
+          "instruction": "เดินตรงผ่านลาน 100 เมตร",
+          "image": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ทางเดินลาน",
+          "distance_from_start": 150,
+          "estimated_time": 3
+        },
+        {
+          "step": 5,
+          "instruction": "เลี้ยวขวาที่ตู้จดหมายสีแดง",
+          "image": "https://via.placeholder.com/400x300/dc3545/FFFFFF?text=ตู้จดหมายสีแดง",
+          "distance_from_start": 170,
+          "estimated_time": 3.5
+        },
+        {
+          "step": 6,
+          "instruction": "เดินตรงไป 30 เมตร ถึงโรงอาหาร",
+          "image": "https://via.placeholder.com/400x300/fd7e14/FFFFFF?text=ทางเข้าโรงอาหาร",
+          "distance_from_start": 200,
+          "estimated_time": 4
+        }
+      ],
+      "landmarks": [
+        {
+          "name": "ทางลาดหลังอาคาร",
+          "description": "ทางลาดคอนกรีต",
+          "distance_from_start": 20
+        },
+        {
+          "name": "ลานอเนกประสงค์",
+          "description": "ลานกว้างสำหรับจัดกิจกรรม",
+          "distance_from_start": 50
+        },
+        {
+          "name": "ตู้จดหมายสีแดง",
+          "description": "ตู้จดหมายใหญ่สีแดง",
+          "distance_from_start": 170
+        },
+        {
+          "name": "ป้ายโรงอาหาร",
+          "description": "ป้ายสีส้มตัวใหญ่",
+          "distance_from_start": 190
+        }
+      ],
+      "images": {
+        "overview": "https://via.placeholder.com/800x600/fd7e14/FFFFFF?text=เส้นทาง1-5",
+        "multipurpose_court": "https://via.placeholder.com/400x300/6c757d/FFFFFF?text=ลานอเนกประสงค์",
+        "mailbox": "https://via.placeholder.com/400x300/dc3545/FFFFFF?text=ตู้จดหมาย"
+      },
+      "notes": "เส้นทางลัดที่ใช้เวลาน้อยที่สุด",
+      "peak_hours": {
+        "lunch": "11:30-13:00 น. ค่อนข้างหนาแน่น",
+        "breakfast": "07:30-08:30 น. ปานกลาง",
+        "other": "ช่วงอื่นๆ ว่าง"
+      }
+    }
+  ],
+  
+  "emergency_info": {
+    "contacts": [
+      {
+        "name": "หน่วยปฐมพยาบาล",
+        "phone": "1669",
+        "internal_phone": "4999",
+        "location": "อาคาร 1 ชั้น 1 ห้องพยาบาล",
+        "description": "บริการปฐมพยาบาลเบื้องต้น",
+        "available": "24 ชั่วโมง"
+      },
+      {
+        "name": "ฝ่ายรักษาความปลอดภัย",
+        "phone": "02-123-4998",
+        "internal_phone": "4998",
+        "location": "ประตูหลัก และทุกจุดตรวจ",
+        "description": "ดูแลความปลอดภัยและช่วยเหลือฉุกเฉิน",
+        "available": "24 ชั่วโมง"
+      },
+      {
+        "name": "ศูนย์ควบคุมการจราจรภายใน",
+        "phone": "02-123-4997",
+        "internal_phone": "4997",
+        "location": "อาคาร 1 ชั้น 1",
+        "description": "ควบคุมการจราจรและที่จอดรถ",
+        "available": "06:00-22:00 น."
+      }
     ],
-    "routes": [
-        {
-            "id": "1-2",
-            "from": 1,
-            "to": 2,
-            "name": "สำนักงานกลาง → ศูนย์บริการ",
-            "distance": "120 เมตร",
-            "time": "2 นาที",
-            "image": "https://via.placeholder.com/400x200/198754/ffffff?text=เส้นทาง1-2",
-            "instructions": [
-                "ออกจากอาคาร 1 ทางประตูด้านหน้า",
-                "เดินตรงไปตามทางเดิน 70 เมตร",
-                "เลี้ยวขวาที่สวนหย่อม",
-                "เดินต่ออีก 50 เมตร",
-                "อาคาร 2 อยู่ทางซ้ายมือ"
-            ],
-            "landmarks": "สวนหย่อม, ป้ายศูนย์บริการ",
-            "accessibility": "ทางราบทั้งหมด",
-            "notes": "มีหลังคากันแดด"
-        },
-        {
-            "id": "1-3",
-            "from": 1,
-            "to": 3,
-            "name": "สำนักงานกลาง → หอประชุม",
-            "distance": "150 เมตร",
-            "time": "3 นาที",
-            "image": "https://via.placeholder.com/400x200/0d6efd/ffffff?text=เส้นทาง1-3",
-            "instructions": [
-                "ออกจากอาคาร 1 ทางประตูข้าง",
-                "เดินตรงไป 100 เมตร",
-                "เลี้ยวซ้ายที่ลานจอดรถ",
-                "เดินผ่านสวนน้ำพุ",
-                "หอประชุมอยู่ตรงหน้า"
-            ],
-            "landmarks": "ลานจอดรถ, สวนน้ำพุ",
-            "accessibility": "มีทางลาดเล็กน้อย",
-            "notes": "ผ่านจุดพักผ่อน"
-        },
-        {
-            "id": "1-4",
-            "from": 1,
-            "to": 4,
-            "name": "สำนักงานกลาง → ศูนย์ข้อมูล",
-            "distance": "80 เมตร",
-            "time": "1 นาที",
-            "image": "https://via.placeholder.com/400x200/ffc107/000000?text=เส้นทาง1-4",
-            "instructions": [
-                "ออกจากอาคาร 1 ทางประตูเชื่อมต่อ",
-                "เดินตามทางเดินกระจก",
-                "ขึ้นบันไดเลื่อนหรือใช้ลิฟต์",
-                "ศูนย์ข้อมูลอยู่ชั้น 1"
-            ],
-            "landmarks": "ทางเดินกระจก, ลิฟต์กลาง",
-            "accessibility": "มีลิฟต์และบันไดเลื่อน",
-            "notes": "อยู่ในร่มทั้งหมด"
-        },
-        {
-            "id": "1-5",
-            "from": 1,
-            "to": 5,
-            "name": "สำนักงานกลาง → โรงอาหาร",
-            "distance": "200 เมตร",
-            "time": "4 นาที",
-            "image": "https://via.placeholder.com/400x200/6f42c1/ffffff?text=เส้นทาง1-5",
-            "instructions": [
-                "ออกจากอาคาร 1 ทางประตูหลัง",
-                "เดินลงบันไดด้านข้าง",
-                "เลี้ยวขวาที่ลานอเนกประสงค์",
-                "เดินตรงไป 120 เมตร",
-                "โรงอาหารอยู่ทางซ้ายมือ"
-            ],
-            "landmarks": "ลานอเนกประสงค์, ตู้เย็นน้ำดื่ม",
-            "accessibility": "มีทางลาด",
-            "notes": "มีที่นั่งพักระหว่างทาง"
-        },
-        {
-            "id": "1-6",
-            "from": 1,
-            "to": 6,
-            "name": "สำนักงานกลาง → อาคารฝึกอบรม",
-            "distance": "250 เมตร",
-            "time": "5 นาที",
-            "image": "https://via.placeholder.com/400x200/fd7e14/ffffff?text=เส้นทาง1-6",
-            "instructions": [
-                "ออกจากอาคาร 1 ทางประตูหลัก",
-                "เดินตรงไป 150 เมตร",
-                "เลี้ยวซ้ายที่ทางแยก",
-                "เดินตามทางเดินมีหลังคา",
-                "อาคารฝึกอบรมอยู่ปลายทาง"
-            ],
-            "landmarks": "ทางแยก, ทางเดินหลังคา",
-            "accessibility": "ทางราบทั้งหมด",
-            "notes": "มีร่มเงาตลอดทาง"
-        },
-        {
-            "id": "2-3",
-            "from": 2,
-            "to": 3,
-            "name": "ศูนย์บริการ → หอประชุม",
-            "distance": "180 เมตร",
-            "time": "4 นาที",
-            "image": "https://via.placeholder.com/400x200/198754/ffffff?text=เส้นทาง2-3",
-            "instructions": [
-                "ออกจากศูนย์บริการทางประตูด้านหน้า",
-                "เดินตรงไปตามทางเดิน 80 เมตร",
-                "เลี้ยวขวาที่สวนน้ำพุ (จุดสังเกต: น้ำพุทรงกลม)",
-                "เดินตรงต่ออีก 70 เมตร",
-                "เลี้ยวซ้ายก่อนถึงลานจอดรถ",
-                "หอประชุมใหญ่อยู่ทางขวามือ"
-            ],
-            "landmarks": "สวนน้ำพุ, ลานจอดรถ, ป้ายหอประชุม",
-            "accessibility": "มีทางลาดสำหรับรถเข็น",
-            "notes": "มีหลังคาตลอดทาง"
-        },
-        {
-            "id": "2-4",
-            "from": 2,
-            "to": 4,
-            "name": "ศูนย์บริการ → ศูนย์ข้อมูล",
-            "distance": "100 เมตร",
-            "time": "2 นาที",
-            "image": "https://via.placeholder.com/400x200/0d6efd/ffffff?text=เส้นทาง2-4",
-            "instructions": [
-                "ออกจากศูนย์บริการทางประตูข้าง",
-                "เดินขึ้นทางลาด",
-                "เลี้ยวซ้ายที่ทางเดินกระจก",
-                "เดินตรงไป 60 เมตร",
-                "ศูนย์ข้อมูลอยู่ชั้น 1 ทางขวา"
-            ],
-            "landmarks": "ทางลาด, ทางเดินกระจก",
-            "accessibility": "มีทางลาดและลิฟต์",
-            "notes": "อยู่ในอาคารเดียวกัน"
-        },
-        {
-            "id": "2-5",
-            "from": 2,
-            "to": 5,
-            "name": "ศูนย์บริการ → โรงอาหาร",
-            "distance": "220 เมตร",
-            "time": "4 นาที",
-            "image": "https://via.placeholder.com/400x200/ffc107/000000?text=เส้นทาง2-5",
-            "instructions": [
-                "ออกจากศูนย์บริการทางประตูหลัง",
-                "เดินลงบันได",
-                "เลี้ยวขวาที่ลานจอดรถ",
-                "เดินตรงไป 150 เมตร",
-                "เลี้ยวซ้ายที่ทางแยก",
-                "โรงอาหารอยู่ตรงหน้า"
-            ],
-            "landmarks": "ลานจอดรถ, ทางแยก, ป้ายโรงอาหาร",
-            "accessibility": "มีทางลาดเล็กน้อย",
-            "notes": "ผ่านลานจอดรถ"
-        },
-        {
-            "id": "2-6",
-            "from": 2,
-            "to": 6,
-            "name": "ศูนย์บริการ → อาคารฝึกอบรม",
-            "distance": "250 เมตร",
-            "time": "5 นาที",
-            "image": "https://via.placeholder.com/400x200/6f42c1/ffffff?text=เส้นทาง2-6",
-            "instructions": [
-                "จากศูนย์บริการ เดินไปทางลานจอดรถ",
-                "เลี้ยวซ้ายที่ทางแยกแรก",
-                "เดินผ่านอาคารบริหาร 100 เมตร",
-                "เลี้ยวขวาที่ทางเดินมีหลังคา",
-                "เดินตรงไปอีก 120 เมตร",
-                "อาคารฝึกอบรมอยู่ตรงหน้า"
-            ],
-            "landmarks": "ลานจอดรถ, อาคารบริหาร, ทางเดินหลังคา",
-            "accessibility": "ทางราบทั้งหมด",
-            "notes": "ผ่านใต้ร่มไม้"
-        },
-        {
-            "id": "3-4",
-            "from": 3,
-            "to": 4,
-            "name": "หอประชุม → ศูนย์ข้อมูล",
-            "distance": "200 เมตร",
-            "time": "4 นาที",
-            "image": "https://via.placeholder.com/400x200/fd7e14/ffffff?text=เส้นทาง3-4",
-            "instructions": [
-                "จากหอประชุม เดินออกทางประตูด้านข้าง",
-                "เลี้ยวขวาที่ทางเดินหลัก",
-                "เดินตรงไป 120 เมตร",
-                "ขึ้นบันไดหรือใช้ลิฟต์",
-                "ศูนย์ข้อมูลอยู่ชั้น 1"
-            ],
-            "landmarks": "ทางเดินหลัก, ลิฟต์กลาง",
-            "accessibility": "มีลิฟต์",
-            "notes": "ส่วนใหญ่เป็นทางในร่ม"
-        },
-        {
-            "id": "3-5",
-            "from": 3,
-            "to": 5,
-            "name": "หอประชุม → โรงอาหาร",
-            "distance": "150 เมตร",
-            "time": "3 นาที",
-            "image": "https://via.placeholder.com/400x200/198754/ffffff?text=เส้นทาง3-5",
-            "instructions": [
-                "จากหอประชุม เดินลงบันไดด้านข้าง",
-                "เลี้ยวซ้ายที่ลานอเนกประสงค์",
-                "เดินตรงไป 100 เมตร",
-                "เลี้ยวขวาที่ตู้จดหมาย",
-                "โรงอาหารอยู่ชั้น 1 ทางซ้าย"
-            ],
-            "landmarks": "ลานอเนกประสงค์, ตู้จดหมาย, ป้ายโรงอาหาร",
-            "accessibility": "มีทางลาด",
-            "notes": "มีที่นั่งพักระหว่างทาง"
-        },
-        {
-            "id": "3-6",
-            "from": 3,
-            "to": 6,
-            "name": "หอประชุม → อาคารฝึกอบรม",
-            "distance": "300 เมตร",
-            "time": "6 นาที",
-            "image": "https://via.placeholder.com/400x200/0d6efd/ffffff?text=เส้นทาง3-6",
-            "instructions": [
-                "จากหอประชุม เดินออกทางประตูหน้า",
-                "เลี้ยวซ้ายที่ทางเดินรอบสวน",
-                "เดินตรงไป 180 เมตร",
-                "เลี้ยวขวาที่ทางแยก",
-                "เดินตามทางเดินหลังคา",
-                "อาคารฝึกอบรมอยู่ปลายทาง"
-            ],
-            "landmarks": "ทางเดินรอบสวน, ทางแยก, ทางเดินหลังคา",
-            "accessibility": "ทางราบทั้งหมด",
-            "notes": "เส้นทางสวนสาธารณะ"
-        }
+    "first_aid_locations": [
+      {
+        "building": 1,
+        "floor": 1,
+        "location": "ห้องพยาบาลหลัก",
+        "equipment": "ครบชุด"
+      },
+      {
+        "building": 2,
+        "floor": 1,
+        "location": "จุดปฐมพยาบาล",
+        "equipment": "ชุดพื้นฐาน"
+      },
+      {
+        "building": 3,
+        "floor": 1,
+        "location": "ห้องพยาบาลสนับสนุน",
+        "equipment": "ครบชุด"
+      }
     ],
-    "emergency_contacts": [
-        {
-            "name": "หน่วยปฐมพยาบาล",
-            "phone": "1669",
-            "location": "อาคาร 1 ชั้น 1",
-            "description": "บริการปฐมพยาบาลเบื้องต้น"
-        },
-        {
-            "name": "ฝ่ายรักษาความปลอดภัย",
-            "phone": "02-123-4999",
-            "location": "ประตูหลัก",
-            "description": "ติดต่อกรณีเหตุฉุกเฉิน"
-        }
+    "emergency_exits": [
+      {
+        "building": "ทั้งหมด",
+        "description": "มีป้าย Exit สีเขียวเรืองแสง",
+        "remark": "ติดตามป้ายฉุกเฉิน"
+      }
+    ],
+    "assembly_points": [
+      {
+        "name": "จุดรวมพลหลัก",
+        "location": "ลานจอดรถด้านหน้า",
+        "capacity": 1000,
+        "description": "จุดรวมพลฉุกเฉินหลัก"
+      },
+      {
+        "name": "จุดรวมพลสำรอง",
+        "location": "ลานอเนกประสงค์",
+        "capacity": 500,
+        "description": "จุดรวมพลสำรอง"
+      }
     ]
+  },
+  
+  "parking_info": {
+    "zones": [
+      {
+        "zone": "A",
+        "name": "ที่จอดรถผู้บริหาร",
+        "location": "ด้านหน้าอาคาร 1",
+        "capacity": 50,
+        "permission": "ผู้บริหารเท่านั้น",
+        "hourly_rate": "ฟรี"
+      },
+      {
+        "zone": "B",
+        "name": "ที่จอดรถเจ้าหน้าที่",
+        "location": "ด้านข้างอาคาร 2",
+        "capacity": 200,
+        "permission": "เจ้าหน้าที่",
+        "hourly_rate": "ฟรี"
+      },
+      {
+        "zone": "C",
+        "name": "ที่จอดรถประชาชน",
+        "location": "ด้านหลังหน่วยงาน",
+        "capacity": 100,
+        "permission": "ประชาชนทั่วไป",
+        "hourly_rate": "ชั่วโมงแรกฟรี ต่อชั่วโมง 20 บาท"
+      },
+      {
+        "zone": "D",
+        "name": "ที่จอดรถผู้พิการ",
+        "location": "ใกล้ประตูเข้าทุกอาคาร",
+        "capacity": 20,
+        "permission": "ผู้พิการและรถฉุกเฉิน",
+        "hourly_rate": "ฟรี"
+      }
+    ],
+    "charging_stations": [
+      {
+        "location": "โซน B หมายเลข 45-50",
+        "type": "EV Charger",
+        "quantity": 6,
+        "rate": "ฟรีสำหรับเจ้าหน้าที่"
+      }
+    ]
+  },
+  
+  "accessibility_info": {
+    "wheelchair_access": {
+      "all_buildings": true,
+      "ramps": "ทุกอาคาร",
+      "elevators": "อาคาร 1, 2, 3, 4, 6, 7",
+      "accessible_toilets": "ทุกอาคารชั้น 1"
+    },
+    "visual_impairment": {
+      "braille_signs": "อาคาร 1, 2, 3",
+      "tactile_paths": "ทางเดินหลัก",
+      "audio_announcements": "ระบบนำทาง"
+    },
+    "hearing_impairment": {
+      "visual_alerts": "อาคาร 1, 3",
+      "sign_language": "ศูนย์บริการอาคาร 2",
+      "text_phones": "จุดบริการข้อมูล"
+    }
+  },
+  
+  "update_log": [
+    {
+      "date": "2026-09-02",
+      "version": "3.0",
+      "changes": [
+        "เพิ่มข้อมูลอาคารครบ 8 อาคาร",
+        "เพิ่มเส้นทางนำทาง 5 เส้นทางหลัก",
+        "ปรับปรุงข้อมูลภาพประกอบ",
+        "เพิ่มข้อมูลการเข้าถึงสำหรับผู้พิการ",
+        "เพิ่มข้อมูลฉุกเฉินและที่จอดรถ"
+      ]
+    },
+    {
+      "date": "2026-08-15",
+      "version": "2.1",
+      "changes": [
+        "แก้ไขพิกัดอาคาร",
+        "เพิ่มข้อมูลเวลาเปิด-ปิด",
+        "ปรับปรุงคำแนะนำเส้นทาง"
+      ]
+    }
+  ],
+  
+  "notes": {
+    "data_accuracy": "ข้อมูลมีความถูกต้อง ณ วันที่อัปเดตล่าสุด",
+    "coordinate_source": "พิกัดวัดจาก Google Maps และตรวจสอบจริง",
+    "update_frequency": "อัปเดตข้อมูลทุก 3 เดือน หรือเมื่อมีการเปลี่ยนแปลง",
+    "contact_for_updates": "ฝ่ายสารสนเทศ อาคาร 1 ชั้น 3 โทร. 4001",
+    "disclaimer": "ข้อมูลนี้จัดทำขึ้นเพื่ออำนวยความสะดวก กรมไม่รับผิดชอบต่อการเปลี่ยนแปลงที่ไม่ได้แจ้งล่วงหน้า"
+  }
 }
