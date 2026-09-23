@@ -1,268 +1,846 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
+    <!-- ==============================================
+         METADATA & SETTINGS
+         ============================================== -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบนำทางหน่วยงานรัฐ - แบบเลือกเส้นทาง</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="ระบบนำทางภายในหน่วยงานรัฐ ใช้งานฟรี 100% ไม่ต้องติดตั้งแอป">
+    <meta name="keywords" content="นำทาง, หน่วยงานรัฐ, แผนที่, GPS, ฟรี, ไม่ต้องติดตั้ง">
+    <meta name="author" content="กรมส่งเสริมการปกครองท้องถิ่น">
+    
+    <!-- PWA Metadata -->
+    <meta name="theme-color" content="#198754">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ระบบนำทางหน่วยงาน">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#198754">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-department.github.io/navigation-system/">
+    <meta property="og:title" content="ระบบนำทางภายในหน่วยงานรัฐ">
+    <meta property="og:description" content="ใช้งานฟรี 100% ไม่ต้องติดตั้งแอป รองรับการนำทางระหว่างอาคาร">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/198754/FFFFFF?text=ระบบนำทางหน่วยงานรัฐ">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://your-department.github.io/navigation-system/">
+    <meta property="twitter:title" content="ระบบนำทางภายในหน่วยงานรัฐ">
+    <meta property="twitter:description" content="ใช้งานฟรี 100% ไม่ต้องติดตั้งแอป">
+    <meta property="twitter:image" content="https://via.placeholder.com/1200x630/198754/FFFFFF?text=ระบบนำทางหน่วยงานรัฐ">
+    
+    <!-- ==============================================
+         TITLE
+         ============================================== -->
+    <title>ระบบนำทางภายใน - กรมส่งเสริมการปกครองท้องถิ่น</title>
+    
+    <!-- ==============================================
+         EXTERNAL CSS LIBRARIES
+         ============================================== -->
+    <!-- Leaflet CSS - แผนที่ฟรี -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin="anonymous" />
+    
+    <!-- Bootstrap 5 CSS - UI Framework ฟรี -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
+          crossorigin="anonymous">
+    
+    <!-- Font Awesome 6 - ไอคอนฟรี -->
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer" />
+    
+    <!-- ==============================================
+         CUSTOM CSS
+         ============================================== -->
     <link rel="stylesheet" href="style.css">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    
+    <!-- ==============================================
+         PWA MANIFEST
+         ============================================== -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- ==============================================
+         FAVICONS & APP ICONS
+         ============================================== -->
+    <!-- Favicon Standard -->
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="144x144" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="114x114" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="76x76" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="72x72" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="60x60" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    <link rel="apple-touch-icon" sizes="57x57" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileImage" content="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+    
+    <!-- ==============================================
+         SERVICE WORKER REGISTRATION
+         ============================================== -->
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+        
+        // Handle PWA installation
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        hideInstallButton();
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+        
+        function showInstallButton() {
+            // You can show an install button here
+        }
+        
+        function hideInstallButton() {
+            // Hide the install button after installation
+        }
+    </script>
+    
+    <!-- ==============================================
+         INITIAL STYLES
+         ============================================== -->
+    <style>
+        /* Prevent flash of unstyled content */
+        html {
+            visibility: hidden;
+            opacity: 0;
+        }
+        
+        /* Loading animation */
+        #initial-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader-logo {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .loader-text {
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
-
 <body>
-    <nav class="navbar navbar-dark bg-primary sticky-top">
-        <div class="container-fluid">
-            <span class="navbar-brand">
-                <i class="fas fa-landmark me-2"></i>ระบบนำทางหน่วยงานรัฐ
-            </span>
-            <button class="btn btn-outline-light btn-sm" onclick="showAbout()">
-                <i class="fas fa-info-circle"></i>
-            </button>
+    <!-- ==============================================
+         INITIAL LOADING SCREEN
+         ============================================== -->
+    <div id="initial-loader">
+        <div class="loader-logo">
+            <i class="fas fa-route"></i>
         </div>
-    </nav>
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">กำลังโหลด...</span>
+        </div>
+        <div class="loader-text mt-3">
+            กำลังโหลดระบบนำทางหน่วยงานรัฐ...
+        </div>
+    </div>
 
-    <div id="map"></div>
-
-    <div class="container mt-3">
-        <!-- ระบบเลือกเส้นทางระหว่างอาคาร -->
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h6 class="mb-0"><i class="fas fa-route me-2"></i>เลือกเส้นทางระหว่างอาคาร</h6>
-            </div>
-            <div class="card-body">
-                <!-- จุดเริ่มต้น -->
-                <div class="mb-3">
-                    <label class="form-label small"><i class="fas fa-map-marker-alt me-1"></i>จุดเริ่มต้น</label>
-                    <select id="fromBuilding" class="form-select" onchange="updateToOptions()">
-                        <option value="">-- เลือกอาคารเริ่มต้น --</option>
-                        <!-- ข้อมูลจะถูก JavaScript เติมให้ -->
-                    </select>
-                </div>
-
-                <!-- จุดหมาย -->
-                <div class="mb-3">
-                    <label class="form-label small"><i class="fas fa-flag me-1"></i>จุดหมายปลายทาง</label>
-                    <select id="toBuilding" class="form-select">
-                        <option value="">-- เลือกอาคารปลายทาง --</option>
-                        <!-- ข้อมูลจะถูก JavaScript เติมให้ -->
-                    </select>
-                </div>
-
-                <!-- ข้อมูลเส้นทาง -->
-                <div id="routeInfo" class="alert alert-info d-none">
-                    <div class="d-flex justify-content-between">
-                        <span><i class="fas fa-ruler me-1"></i><span id="routeDistance">-</span></span>
-                        <span><i class="fas fa-clock me-1"></i><span id="routeTime">-</span></span>
-                    </div>
-                    <p class="mb-0 small" id="routeDescription">-</p>
-                </div>
-
-                <!-- ปุ่มดำเนินการ -->
-                <div class="row g-2">
-                    <div class="col-6">
-                        <button class="btn btn-outline-primary w-100" onclick="showRouteOnMap()" id="showRouteBtn"
-                            disabled>
-                            <i class="fas fa-map me-1"></i>ดูเส้นทาง
+    <!-- ==============================================
+         MAIN APP CONTAINER
+         ============================================== -->
+    <div id="app-container" style="display: none;">
+        <!-- ==============================================
+             HEADER / NAVBAR
+             ============================================== -->
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
+                <div class="container-fluid">
+                    <!-- Brand Logo & Name -->
+                    <a class="navbar-brand d-flex align-items-center" href="#">
+                        <div class="header-logo me-2">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="header-text">
+                            <div class="header-title">กรมส่งเสริมการปกครองท้องถิ่น</div>
+                            <div class="header-subtitle small">ระบบนำทางภายในหน่วยงาน</div>
+                        </div>
+                    </a>
+                    
+                    <!-- Right Side Controls -->
+                    <div class="d-flex align-items-center">
+                        <!-- GPS Status Indicator -->
+                        <div class="gps-status me-3 d-none" id="gpsStatus">
+                            <i class="fas fa-satellite text-success"></i>
+                            <span class="small ms-1">GPS</span>
+                        </div>
+                        
+                        <!-- Theme Toggle -->
+                        <button class="btn btn-outline-light btn-sm me-2" id="themeToggle" title="เปลี่ยนธีม">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
+                        
+                        <!-- About Button -->
+                        <button class="btn btn-outline-light btn-sm me-2" id="aboutButton" title="เกี่ยวกับระบบ">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                        
+                        <!-- Install PWA Button (hidden by default) -->
+                        <button class="btn btn-success btn-sm d-none" id="installButton" title="ติดตั้งแอป">
+                            <i class="fas fa-download me-1"></i>
+                            ติดตั้ง
                         </button>
                     </div>
-                    <div class="col-6">
-                        <button class="btn btn-success w-100" onclick="startRouteNavigation()" id="startRouteBtn"
-                            disabled>
-                            <i class="fas fa-play me-1"></i>เริ่มนำทาง
-                        </button>
-                    </div>
                 </div>
-            </div>
-        </div>
+            </nav>
+        </header>
 
-        <!-- รายการอาคารทั้งหมด -->
-        <div class="card mt-3">
-            <div class="card-header bg-light">
-                <h6 class="mb-0"><i class="fas fa-building me-2"></i>รายการอาคารทั้งหมด</h6>
-            </div>
-            <div class="card-body p-0">
-                <div id="building-list" class="list-group list-group-flush">
-                    <!-- ข้อมูลจะถูก JavaScript ดึงมาแสดง -->
-                </div>
-            </div>
-        </div>
-
-        <!-- ปุ่มเพิ่มเติม -->
-        <div class="row mt-3 g-2">
-            <div class="col-4">
-                <button class="btn btn-outline-success w-100" onclick="useMyLocation()">
-                    <i class="fas fa-location-arrow"></i>
-                </button>
-            </div>
-            <div class="col-4">
-                <button class="btn btn-outline-primary w-100" onclick="showAllBuildings()">
-                    <i class="fas fa-layer-group"></i>
-                </button>
-            </div>
-            <div class="col-4">
-                <button class="btn btn-outline-info w-100" onclick="resetRoute()">
-                    <i class="fas fa-redo"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- แผงนำทาง -->
-        <!-- แผงข้อมูลแบบเรียลไทม์ (เพิ่มใน navigationPanel) -->
-        <div id="realTimeInfo" class="real-time-info d-none">
-            <div class="real-time-stats">
-                <div class="real-time-stat">
-                    <div class="value" id="distanceRemaining">-</div>
-                    <div class="label">ระยะทางเหลือ</div>
-                </div>
-                <div class="real-time-stat">
-                    <div class="value" id="timeRemaining">-</div>
-                    <div class="label">เวลาถึงโดยประมาณ</div>
-                </div>
-                <div class="real-time-stat">
-                    <div class="value" id="currentSpeed">0</div>
-                    <div class="label">กม./ชม.</div>
-                </div>
-            </div>
-
-            <div class="progress mt-2" style="height: 6px;">
-                <div id="routeProgress" class="progress-bar bg-success" style="width: 0%"></div>
-            </div>
-        </div>
-
-        <!-- เครื่องหมายทิศทาง -->
-        <div id="directionIndicator" class="direction-indicator d-none">
-            <div class="direction-arrow" id="directionArrow">↑</div>
-        </div>
-
-        <!-- ปุ่มควบคุมแบบเรียลไทม์ -->
-        <div id="realTimeControls" class="real-time-controls d-none">
-            <button class="real-time-btn btn-center-map" onclick="centerMapOnUser()">
-                <i class="fas fa-crosshairs"></i>
-            </button>
-            <button class="real-time-btn btn-stop-tracking" onclick="stopRealTimeNavigation()">
-                <i class="fas fa-stop"></i>
-            </button>
-            <button class="real-time-btn btn-start-tracking" onclick="startRealTimeNavigation()">
-                <i class="fas fa-play"></i>
-            </button>
-        </div>
-
-        <div id="navigationPanel" class="card mt-3 d-none">
-            <div class="card-header bg-warning text-dark">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-0"><i class="fas fa-route me-2"></i>กำลังนำทาง</h6>
-                        <small id="routeTitle" class="text-muted">-</small>
-                    </div>
-                    <button class="btn btn-sm btn-outline-dark" onclick="stopNavigation()">
-                        <i class="fas fa-times"></i> ปิด
+        <!-- ==============================================
+             MAIN CONTENT AREA
+             ============================================== -->
+        <main class="main-content">
+            <!-- Map Container -->
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-overlay">
+                    <!-- GPS Button -->
+                    <button class="btn btn-primary btn-sm map-control" id="locateButton" title="ตำแหน่งปัจจุบัน">
+                        <i class="fas fa-location-arrow"></i>
                     </button>
+                    
+                    <!-- Zoom Controls -->
+                    <div class="zoom-controls">
+                        <button class="btn btn-light btn-sm zoom-in" id="zoomIn" title="ขยาย">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn btn-light btn-sm zoom-out" id="zoomOut" title="ย่อ">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="card-body">
-                <!-- สถานะเส้นทาง -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <span class="badge bg-primary me-2" id="currentStep">ขั้นตอนที่ 1/5</span>
-                        <span class="badge bg-success" id="routeStats">150 ม. • 3 นาที</span>
+
+            <!-- Main Content Container -->
+            <div class="content-container">
+                <!-- Route Selection Card -->
+                <div class="card main-card shadow-lg">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-route me-2"></i>
+                                <h5 class="mb-0">เลือกเส้นทางระหว่างอาคาร</h5>
+                            </div>
+                            <span class="badge bg-light text-primary">ฟรี 100%</span>
+                        </div>
                     </div>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
-                        <i class="fas fa-expand"></i>
-                    </button>
-                </div>
-
-                <!-- ภาพประกอบ -->
-                <div id="routeImageContainer" class="text-center mb-3">
-                    <img src="" class="route-image" id="routeImage"
-                        onerror="this.src='https://via.placeholder.com/400x200/6c757d/ffffff?text=ภาพเส้นทาง'">
-                </div>
-
-                <!-- คำแนะนำ -->
-                <div id="routeInstruction" class="alert alert-light border">
-                    <i class="fas fa-info-circle text-primary me-2"></i>
-                    <span id="instructionText">กรุณาเลือกเส้นทาง</span>
-                </div>
-
-                <!-- จุดสังเกต -->
-                <div id="landmarksInfo" class="alert alert-secondary d-none">
-                    <h6 class="mb-2"><i class="fas fa-map-marker-alt me-1"></i>จุดสังเกตสำคัญ</h6>
-                    <p class="mb-0 small" id="landmarksText">-</p>
-                </div>
-
-                <!-- ความคืบหน้า -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between small text-muted mb-1">
-                        <span><i class="fas fa-walking me-1"></i>ความคืบหน้า</span>
-                        <span id="progressPercent">0%</span>
+                    
+                    <div class="card-body">
+                        <!-- From Building Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-primary">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                จุดเริ่มต้น
+                            </label>
+                            <div class="input-group">
+                                <select class="form-select form-select-lg" id="fromBuilding">
+                                    <option value="" selected disabled>-- เลือกอาคารเริ่มต้น --</option>
+                                    <!-- Buildings will be populated by JavaScript -->
+                                </select>
+                                <button class="btn btn-outline-primary" type="button" id="useMyLocation">
+                                    <i class="fas fa-location-arrow"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- To Building Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-success">
+                                <i class="fas fa-flag me-2"></i>
+                                จุดหมายปลายทาง
+                            </label>
+                            <select class="form-select form-select-lg" id="toBuilding">
+                                <option value="" selected disabled>-- เลือกอาคารปลายทาง --</option>
+                                <!-- Buildings will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <button class="btn btn-outline-primary w-100" id="swapButton">
+                                    <i class="fas fa-exchange-alt me-2"></i>
+                                    สลับจุด
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-success w-100" id="clearButton">
+                                    <i class="fas fa-redo me-2"></i>
+                                    ล้างทั้งหมด
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Route Information (Hidden by default) -->
+                        <div class="route-info-card card border-success mb-4 d-none" id="routeInfoCard">
+                            <div class="card-header bg-success text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0" id="routeName">ชื่อเส้นทาง</h6>
+                                    <span class="badge bg-light text-success" id="routeStatus">พร้อมนำทาง</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Route Stats -->
+                                <div class="row text-center mb-3">
+                                    <div class="col-4">
+                                        <div class="route-stat">
+                                            <i class="fas fa-ruler-combined text-primary fa-2x"></i>
+                                            <div class="stat-value mt-2" id="routeDistance">-</div>
+                                            <div class="stat-label">ระยะทาง</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="route-stat">
+                                            <i class="fas fa-clock text-warning fa-2x"></i>
+                                            <div class="stat-value mt-2" id="routeTime">-</div>
+                                            <div class="stat-label">เวลาเดิน</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="route-stat">
+                                            <i class="fas fa-mountain text-info fa-2x"></i>
+                                            <div class="stat-value mt-2" id="routeSteps">-</div>
+                                            <div class="stat-label">ขั้นตอน</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Route Description -->
+                                <div class="route-description">
+                                    <i class="fas fa-info-circle text-muted me-2"></i>
+                                    <span id="routeDescription">คำอธิบายเส้นทาง</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <button class="btn btn-outline-info w-100 btn-lg" id="previewButton" disabled>
+                                    <i class="fas fa-map me-2"></i>
+                                    ดูเส้นทาง
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-success w-100 btn-lg" id="startButton" disabled>
+                                    <i class="fas fa-play me-2"></i>
+                                    เริ่มนำทาง
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="progress" style="height: 10px;">
-                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                            role="progressbar" style="width: 0%"></div>
-                    </div>
                 </div>
 
-                <!-- ปุ่มควบคุม -->
-                <div class="row g-2">
-                    <div class="col-3">
-                        <button class="btn btn-outline-secondary w-100" onclick="prevStep()" id="prevBtn" disabled>
-                            <i class="fas fa-backward"></i>
+                <!-- Building List Card -->
+                <div class="card mt-4 shadow">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building me-2"></i>
+                                <h5 class="mb-0">รายการอาคารทั้งหมด</h5>
+                            </div>
+                            <span class="badge bg-light text-primary" id="buildingCount">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="60" class="text-center">#</th>
+                                        <th>ชื่ออาคาร</th>
+                                        <th width="120" class="text-center">ประเภท</th>
+                                        <th width="120" class="text-center">ตัวเลือก</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="buildingTable">
+                                    <!-- Buildings will be populated by JavaScript -->
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">กำลังโหลด...</span>
+                                            </div>
+                                            <div class="mt-2 text-muted">กำลังโหลดข้อมูลอาคาร...</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ==============================================
+             NAVIGATION PANEL (Hidden by default)
+             ============================================== -->
+        <div class="navigation-panel" id="navigationPanel">
+            <div class="navigation-header bg-gradient-warning text-dark">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0" id="navTitle">
+                                <i class="fas fa-route me-2"></i>
+                                กำลังนำทาง
+                            </h5>
+                            <small class="text-muted" id="navSubtitle">-</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <!-- Real-time Tracking Toggle -->
+                            <button class="btn btn-sm btn-outline-dark me-2" id="realtimeToggle" title="ติดตามตำแหน่ง">
+                                <i class="fas fa-satellite"></i>
+                            </button>
+                            <!-- Close Navigation -->
+                            <button class="btn btn-sm btn-outline-dark" id="closeNavigation" title="ปิดการนำทาง">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation-body">
+                <div class="container-fluid">
+                    <!-- Step Progress -->
+                    <div class="step-progress-card card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="step-text fw-bold" id="currentStepText">ขั้นตอนที่ 1/5</span>
+                                <span class="badge bg-info" id="stepDistance">50 เมตร</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                     id="stepProgress" style="width: 20%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Image -->
+                    <div class="text-center mb-4">
+                        <div class="navigation-image-container">
+                            <img id="stepImage" class="step-image rounded shadow" 
+                                 src="https://via.placeholder.com/400x200/6c757d/ffffff?text=ภาพประกอบการนำทาง" 
+                                 alt="ภาพประกอบการนำทาง">
+                            <div class="image-caption text-muted small mt-2" id="imageCaption">
+                                ภาพประกอบจุดสำคัญ
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Instruction Card -->
+                    <div class="instruction-card card mb-3">
+                        <div class="card-header bg-light">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                <h6 class="mb-0">คำแนะนำการเดินทาง</h6>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0 lead" id="instructionText">
+                                กรุณาเลือกเส้นทางเพื่อเริ่มนำทาง
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Landmarks Card -->
+                    <div class="landmarks-card card mb-3" id="landmarksCard">
+                        <div class="card-header bg-light">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-warning me-2"></i>
+                                <h6 class="mb-0">จุดสังเกตสำคัญ</h6>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0" id="landmarksText">-</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Accessibility Card -->
+                    <div class="accessibility-card card mb-4" id="accessibilityCard">
+                        <div class="card-header bg-light">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-wheelchair text-success me-2"></i>
+                                <h6 class="mb-0">ข้อมูลการเข้าถึง</h6>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-0" id="accessibilityText">-</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Real-time Stats (Hidden by default) -->
+                    <div class="realtime-stats-card card mb-4 d-none" id="realtimeStatsCard">
+                        <div class="card-header bg-info text-white">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-chart-line me-2"></i>
+                                <h6 class="mb-0">ข้อมูลการเดินทาง</h6>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="realtime-stat">
+                                        <div class="stat-value text-primary fw-bold" id="remainingDistance">-</div>
+                                        <div class="stat-label text-muted">ระยะทางเหลือ</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="realtime-stat">
+                                        <div class="stat-value text-warning fw-bold" id="remainingTime">-</div>
+                                        <div class="stat-label text-muted">เวลาคงเหลือ</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="realtime-stat">
+                                        <div class="stat-value text-success fw-bold" id="currentSpeed">0</div>
+                                        <div class="stat-label text-muted">กม./ชม.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Controls -->
+                    <div class="navigation-controls">
+                        <div class="row g-2">
+                            <div class="col-3">
+                                <button class="btn btn-control btn-outline-secondary w-100" id="prevButton" disabled>
+                                    <i class="fas fa-backward fa-lg"></i>
+                                </button>
+                            </div>
+                            <div class="col-3">
+                                <button class="btn btn-control btn-outline-primary w-100" id="speakButton">
+                                    <i class="fas fa-volume-up fa-lg"></i>
+                                </button>
+                            </div>
+                            <div class="col-3">
+                                <button class="btn btn-control btn-outline-info w-100" id="detailsButton">
+                                    <i class="fas fa-eye fa-lg"></i>
+                                </button>
+                            </div>
+                            <div class="col-3">
+                                <button class="btn btn-control btn-success w-100" id="nextButton">
+                                    <i class="fas fa-forward fa-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             FOOTER
+             ============================================== -->
+        <footer class="app-footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start">
+                        <small class="text-muted">
+                            <i class="fas fa-copyright"></i> 2026 กรมส่งเสริมการปกครองท้องถิ่น
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <small class="text-muted">
+                            <i class="fas fa-phone me-1"></i> 02-123-4567
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-envelope me-1"></i> contact@dla.go.th
+                        </small>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12 text-center">
+                        <small class="text-muted">
+                            ระบบนำทางภายในหน่วยงาน ใช้งานฟรี 100%
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ==============================================
+             MODALS & DIALOGS
+             ============================================== -->
+        <!-- About Modal -->
+        <div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-info-circle me-2"></i>
+                            เกี่ยวกับระบบนำทาง
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <div class="app-logo-large">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <h4 class="mt-3">ระบบนำทางภายในหน่วยงานรัฐ</h4>
+                            <p class="text-muted">เวอร์ชัน 3.0</p>
+                        </div>
+                        
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>ใช้งานฟรี 100% ไม่มีค่าใช้จ่าย</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>รองรับการนำทางระหว่างอาคารทุกเส้นทาง</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>ระบบแนะนำเส้นทางแบบขั้นตอน</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>เสียงพูดคำแนะนำ (Text-to-Speech)</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>ติดตามตำแหน่งแบบเรียลไทม์</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>ไม่ต้องติดตั้งแอป ใช้งานผ่านเบราว์เซอร์</span>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <small>ระบบนี้พัฒนาเพื่ออำนวยความสะดวกแก่ประชาชนและเจ้าหน้าที่
+                            ข้อมูลทั้งหมดเป็นความลับของหน่วยงาน</small>
+                        </div>
+                        
+                        <div class="tech-info mt-4">
+                            <h6 class="border-bottom pb-2">เทคโนโลยีที่ใช้</h6>
+                            <div class="row">
+                                <div class="col-6">
+                                    <i class="fas fa-map text-primary me-2"></i>
+                                    <span>Leaflet.js</span>
+                                </div>
+                                <div class="col-6">
+                                    <i class="fas fa-code text-primary me-2"></i>
+                                    <span>Bootstrap 5</span>
+                                </div>
+                                <div class="col-6">
+                                    <i class="fas fa-cloud text-primary me-2"></i>
+                                    <span>GitHub Pages</span>
+                                </div>
+                                <div class="col-6">
+                                    <i class="fas fa-database text-primary me-2"></i>
+                                    <span>JSON Database</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            ปิด
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i>
+                            พิมพ์คู่มือ
                         </button>
                     </div>
-                    <div class="col-3">
-                        <button class="btn btn-outline-primary w-100" onclick="speakInstruction()">
-                            <i class="fas fa-volume-up"></i>
-                        </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPS Permission Modal -->
+        <div class="modal fade" id="gpsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            การใช้งานตำแหน่ง
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="col-3">
-                        <button class="btn btn-outline-info w-100" onclick="toggleDetails()">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                    <div class="modal-body">
+                        <p>ระบบนำทางต้องการใช้ตำแหน่งปัจจุบันของคุณเพื่อ:</p>
+                        <ul>
+                            <li>แสดงตำแหน่งของคุณบนแผนที่</li>
+                            <li>คำนวณเส้นทางจากตำแหน่งปัจจุบัน</li>
+                            <li>ติดตามการเดินทางแบบเรียลไทม์</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="fas fa-info-circle me-2"></i>
+                                ข้อมูลตำแหน่งจะถูกใช้เฉพาะในเซสชันปัจจุบันเท่านั้น
+                                ไม่มีการเก็บข้อมูลตำแหน่งของคุณ
+                            </small>
+                        </div>
                     </div>
-                    <div class="col-3">
-                        <button class="btn btn-primary w-100" onclick="nextStep()" id="nextBtn">
-                            <i class="fas fa-forward"></i>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            ปฎิเสธ
+                        </button>
+                        <button type="button" class="btn btn-primary" id="allowGPS">
+                            อนุญาต
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="liveToast" class="toast" role="alert">
+                <div class="toast-header">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong class="me-auto">ระบบนำทาง</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body" id="toastMessage"></div>
             </div>
         </div>
     </div>
 
-    <!-- About Modal -->
-    <div class="modal fade" id="aboutModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>เกี่ยวกับระบบนำทาง</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>ระบบนำทางระหว่างอาคารหน่วยงานรัฐ</strong></p>
-                    <p>สามารถนำทางจากอาคารใดไปอาคารใดภายในหน่วยงานได้</p>
-                    <ul class="mb-3">
-                        <li>รองรับเส้นทางระหว่างอาคารทั้งหมด</li>
-                        <li>คำแนะนำทีละขั้นตอนพร้อมภาพประกอบ</li>
-                        <li>ระบบเสียงพูดคำแนะนำ</li>
-                        <li>แสดงจุดสังเกตสำคัญ</li>
-                        <li>คำนวณระยะทางและเวลาเดิน</li>
-                    </ul>
-                    <div class="alert alert-warning small">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        ข้อมูลเส้นทางและภาพประกอบต้องสำรวจและบันทึกจากหน่วยงานจริง
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- ==============================================
+         EXTERNAL JAVASCRIPT LIBRARIES
+         ============================================== -->
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Leaflet JS - แผนที่ฟรี -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin="anonymous"></script>
+    
+    <!-- ==============================================
+         CUSTOM JAVASCRIPT
+         ============================================== -->
     <script src="script.js"></script>
+    
+    <!-- ==============================================
+         INITIALIZATION SCRIPT
+         ============================================== -->
+    <script>
+        // Hide initial loader and show app
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('initial-loader').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('initial-loader').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    
+                    // Show app content
+                    document.documentElement.style.visibility = 'visible';
+                    document.documentElement.style.opacity = '1';
+                }, 500);
+            }, 1000);
+        });
+        
+        // Error handling
+        window.addEventListener('error', function(event) {
+            console.error('Application error:', event.error);
+            showToast('เกิดข้อผิดพลาดในระบบ', 'danger');
+        });
+        
+        // Offline/Online detection
+        window.addEventListener('offline', function() {
+            showToast('คุณกำลังทำงานแบบออฟไลน์', 'warning');
+        });
+        
+        window.addEventListener('online', function() {
+            showToast('เชื่อมต่ออินเทอร์เน็ตแล้ว', 'success');
+        });
+        
+        // Helper function for toast
+        function showToast(message, type = 'info') {
+            const toastEl = document.getElementById('liveToast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (!toastEl || !toastMessage) return;
+            
+            toastMessage.textContent = message;
+            
+            // Update toast header based on type
+            const toastHeader = toastEl.querySelector('.toast-header');
+            const icon = toastHeader.querySelector('i');
+            
+            const config = {
+                'success': { class: 'bg-success text-white', icon: 'fa-check-circle' },
+                'danger': { class: 'bg-danger text-white', icon: 'fa-exclamation-circle' },
+                'warning': { class: 'bg-warning text-dark', icon: 'fa-exclamation-triangle' },
+                'info': { class: 'bg-info text-white', icon: 'fa-info-circle' }
+            }[type] || { class: 'bg-primary text-white', icon: 'fa-info-circle' };
+            
+            toastHeader.className = `toast-header ${config.class}`;
+            icon.className = `fas ${config.icon} me-2`;
+            
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
 </body>
-
 </html>
