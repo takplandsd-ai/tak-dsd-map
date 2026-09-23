@@ -1,0 +1,541 @@
+{
+  "name": "ระบบนำทางหน่วยงานรัฐ",
+  "short_name": "นำทางหน่วยงาน",
+  "description": "ระบบนำทางภายในหน่วยงานรัฐ ใช้งานฟรี 100% ไม่ต้องติดตั้งแอป",
+  "lang": "th-TH",
+  "dir": "ltr",
+  "theme_color": "#198754",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "id": "/",
+  
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "screenshot-mobile-1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "หน้าหลักระบบนำทาง"
+    },
+    {
+      "src": "screenshot-mobile-2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ระบบเลือกเส้นทาง"
+    },
+    {
+      "src": "screenshot-mobile-3.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ระบบนำทางทีละขั้นตอน"
+    },
+    {
+      "src": "screenshot-tablet-1.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "หน้าจอแท็บเล็ต"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "เริ่มนำทางด่วน",
+      "short_name": "นำทางด่วน",
+      "description": "เริ่มระบบนำทางทันที",
+      "url": "/#start-navigation",
+      "icons": [
+        {
+          "src": "shortcut-icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "ดูเส้นทางทั้งหมด",
+      "short_name": "เส้นทาง",
+      "description": "ดูเส้นทางทั้งหมดที่มี",
+      "url": "/#all-routes",
+      "icons": [
+        {
+          "src": "shortcut-routes-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "ข้อมูลอาคาร",
+      "short_name": "อาคาร",
+      "description": "ดูข้อมูลอาคารทั้งหมด",
+      "url": "/#buildings",
+      "icons": [
+        {
+          "src": "shortcut-buildings-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "categories": [
+    "navigation",
+    "utilities",
+    "productivity",
+    "government"
+  ],
+  
+  "related_applications": [],
+  
+  "prefer_related_applications": false,
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+nav",
+      "url": "/route?path=%s"
+    }
+  ],
+  
+  "launch_handler": {
+    "client_mode": "auto"
+  },
+  
+  "handle_links": "preferred",
+  
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "name",
+      "text": "description",
+      "url": "link"
+    }
+  },
+  
+  "file_handlers": [
+    {
+      "action": "/open-file",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt"]
+      },
+      "icons": [
+        {
+          "src": "file-icon-64x64.png",
+          "sizes": "64x64",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "edge_side_panel": {
+    "preferred_width": 320
+  },
+  
+  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  
+  "widgets": [
+    {
+      "name": "ระบบนำทางหน่วยงาน",
+      "tag": "navigation",
+      "template": "grid",
+      "data": "widget-data.json",
+      "type": "application/json",
+      "ms_ac_template": "Grid"
+    }
+  ],
+  
+  "permissions": [
+    "geolocation",
+    "storage",
+    "notifications"
+  ],
+  
+  "background": {
+    "scripts": ["service-worker.js"],
+    "type": "module"
+  },
+  
+  "serviceworker": {
+    "src": "service-worker.js",
+    "scope": "/",
+    "update_via_cache": "none"
+  },
+  
+  "features": [
+    "Cross Platform",
+    "fast",
+    "simple",
+    "responsive",
+    "offline"
+  ],
+  
+  "developer": {
+    "name": "กรมส่งเสริมการปกครองท้องถิ่น",
+    "url": "https://www.dla.go.th"
+  },
+  
+  "metadata": {
+    "author": "กรมส่งเสริมการปกครองท้องถิ่น กระทรวงมหาดไทย",
+    "generator": "ระบบนำทางหน่วยงานรัฐ v3.0",
+    "keywords": ["นำทาง", "หน่วยงานรัฐ", "แผนที่", "GPS", "ฟรี", "ไม่ต้องติดตั้ง"],
+    "robots": "index, follow"
+  },
+  
+  "installation": {
+    "additional_information": "ใช้งานฟรี 100% ไม่มีค่าใช้จ่ายใดๆ"
+  },
+  
+  "platform": "web",
+  
+  "release_notes": "เวอร์ชัน 3.0 - ระบบนำทางสมบูรณ์แบบ รองรับทุกฟีเจอร์ที่ต้องการ",
+  
+  "iarc_rating_id": "e10b2d59-5d8a-4c3e-9a3f-7c8d5a2b1c4f",
+  
+  "suggested_locales": ["th-TH", "th", "en-US"],
+  
+  "prefer_mobile_version": true,
+  
+  "pwa": {
+    "version": "3.0.0",
+    "build_date": "2026-09-02",
+    "compatibility": {
+      "chrome": ">= 80",
+      "firefox": ">= 79",
+      "safari": ">= 13.1",
+      "edge": ">= 80"
+    }
+  },
+  
+  "government_metadata": {
+    "agency": "กรมส่งเสริมการปกครองท้องถิ่น",
+    "ministry": "กระทรวงมหาดไทย",
+    "service_id": "NAV-001",
+    "service_type": "ดิจิทัล",
+    "service_category": "บริการประชาชน",
+    "accessibility_level": "AAA",
+    "security_level": "มาตรฐานราชการ",
+    "data_classification": "ข้อมูลภายใน",
+    "update_frequency": "อัปเดตเมื่อมีการเปลี่ยนแปลง",
+    "contact_for_support": "ฝ่ายเทคโนโลยีสารสนเทศ อาคาร 1 ชั้น 3",
+    "support_phone": "02-123-4001",
+    "support_email": "techsupport@dla.go.th",
+    "availability": "24/7",
+    "maintenance_window": "วันอาทิตย์ 01:00-04:00 น.",
+    "backup_schedule": "ทุกวัน 02:00 น.",
+    "compliance": [
+      "พระราชบัญญัติข้อมูลข่าวสารของราชการ",
+      "พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล",
+      "มาตรฐานความปลอดภัยสารสนเทศราชการ"
+    ]
+  },
+  
+  "version": "3.0.0",
+  
+  "version_name": "ฉบับสมบูรณ์",
+  
+  "update_date": "2026-09-02",
+  
+  "minimum_browser_version": {
+    "chrome": "80",
+    "firefox": "79",
+    "safari": "13.1",
+    "edge": "80"
+  },
+  
+  "recommended_browser": "Google Chrome ขึ้นไป",
+  
+  "cache_strategy": "stale-while-revalidate",
+  
+  "storage_quota": "50MB",
+  
+  "offline_support": true,
+  
+  "sync_support": false,
+  
+  "push_support": false,
+  
+  "background_sync": false,
+  
+  "periodic_sync": false,
+  
+  "content_indexing": true,
+  
+  "file_system_access": false,
+  
+  "web_share": true,
+  
+  "web_share_target": true,
+  
+  "contact_picker": false,
+  
+  "badging": false,
+  
+  "get_installed_related_apps": false,
+  
+  "idle_detection": false,
+  
+  "serial": false,
+  
+  "sms_receiver": false,
+  
+  "usb": false,
+  
+  "shortcuts_enabled": true,
+  
+  "screenshots_enabled": true,
+  
+  "widgets_enabled": true,
+  
+  "file_handlers_enabled": true,
+  
+  "protocol_handlers_enabled": true,
+  
+  "url_handlers_enabled": true,
+  
+  "window_controls_overlay": true,
+  
+  "run_on_os_login": false,
+  
+  "launch_handler_enabled": true,
+  
+  "tab_strip": false,
+  
+  "display_mode": "standalone",
+  
+  "display_override_enabled": true,
+  
+  "display_mode_options": ["standalone", "minimal-ui", "fullscreen"],
+  
+  "theme_color_options": ["#198754", "#0d6efd", "#6f42c1"],
+  
+  "background_color_options": ["#ffffff", "#f8f9fa", "#212529"],
+  
+  "icon_maskable": true,
+  
+  "icon_purpose": ["any", "maskable", "monochrome"],
+  
+  "icon_sizes": ["192x192", "256x256", "384x384", "512x512"],
+  
+  "icon_formats": ["png", "svg"],
+  
+  "icon_precomposed": true,
+  
+  "icon_generation": {
+    "service": "https://icon.kitchen/",
+    "parameters": {
+      "icon": "🏛️",
+      "themeColor": "#198754",
+      "backgroundColor": "#ffffff",
+      "padding": "10%"
+    }
+  },
+  
+  "splash_screen": {
+    "enabled": true,
+    "color": "#198754",
+    "image": "splash-screen.png"
+  },
+  
+  "app_shell": {
+    "enabled": true,
+    "url": "/shell.html",
+    "components": ["header", "nav", "main", "footer"]
+  },
+  
+  "router": {
+    "type": "hash",
+    "fallback": "index.html"
+  },
+  
+  "performance": {
+    "preload": ["index.html", "style.css", "script.js"],
+    "prefetch": ["locations.json"],
+    "preconnect": ["https://unpkg.com", "https://cdn.jsdelivr.net"],
+    "dns_prefetch": ["unpkg.com", "cdnjs.cloudflare.com"],
+    "cache_first": ["style.css", "script.js"],
+    "network_first": ["locations.json"],
+    "stale_while_revalidate": ["https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"]
+  },
+  
+  "analytics": {
+    "enabled": false,
+    "provider": "self-hosted",
+    "endpoint": "/api/analytics",
+    "privacy_level": "high"
+  },
+  
+  "feedback": {
+    "enabled": true,
+    "method": "email",
+    "email": "feedback@dla.go.th",
+    "form_url": "/feedback"
+  },
+  
+  "help": {
+    "enabled": true,
+    "url": "/help",
+    "faq": "/faq",
+    "tutorial": "/tutorial"
+  },
+  
+  "accessibility": {
+    "enabled": true,
+    "features": [
+      "keyboard_navigation",
+      "screen_reader",
+      "high_contrast",
+      "large_text",
+      "reduced_motion"
+    ],
+    "compliance": "WCAG 2.1 AAA"
+  },
+  
+  "security": {
+    "csp": "default-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+    "feature_policy": "geolocation 'self'",
+    "referrer_policy": "strict-origin-when-cross-origin",
+    "hsts": true,
+    "xss_protection": true,
+    "clickjacking_protection": true,
+    "mime_sniffing_protection": true
+  },
+  
+  "privacy": {
+    "data_collection": "minimal",
+    "data_storage": "local_storage_only",
+    "data_sharing": "none",
+    "cookies": "none",
+    "tracking": "disabled"
+  },
+  
+  "maintenance": {
+    "mode": false,
+    "message": "ระบบกำลังปรับปรุงชั่วคราว",
+    "estimated_time": "2 ชั่วโมง"
+  },
+  
+  "backup": {
+    "enabled": true,
+    "frequency": "daily",
+    "location": "local_storage",
+    "size_limit": "10MB"
+  },
+  
+  "export": {
+    "enabled": true,
+    "formats": ["json", "csv"],
+    "data_types": ["routes", "buildings", "settings"]
+  },
+  
+  "import": {
+    "enabled": true,
+    "formats": ["json"],
+    "max_size": "5MB"
+  },
+  
+  "customization": {
+    "theme": true,
+    "language": false,
+    "units": true,
+    "display": true
+  },
+  
+  "notifications": {
+    "enabled": false,
+    "types": ["updates", "maintenance", "emergency"]
+  },
+  
+  "updates": {
+    "enabled": true,
+    "method": "service_worker",
+    "check_interval": 86400000,
+    "automatic": true
+  },
+  
+  "compatibility": {
+    "desktop": true,
+    "mobile": true,
+    "tablet": true,
+    "smart_tv": false,
+    "smart_watch": false
+  },
+  
+  "testing": {
+    "url": "/test",
+    "users": 100,
+    "duration": "30 วัน"
+  },
+  
+  "documentation": {
+    "url": "/docs",
+    "version": "3.0",
+    "last_updated": "2026-09-02"
+  },
+  
+  "support": {
+    "email": "support@dla.go.th",
+    "phone": "02-123-4567",
+    "hours": "08:30-16:30 น. จันทร์-ศุกร์",
+    "response_time": "ภายใน 24 ชั่วโมง"
+  },
+  
+  "credits": {
+    "developed_by": "กรมส่งเสริมการปกครองท้องถิ่น",
+    "map_data": "OpenStreetMap contributors",
+    "icons": "Font Awesome",
+    "ui_framework": "Bootstrap 5",
+    "map_library": "Leaflet.js"
+  },
+  
+  "license": {
+    "name": "สัญญาอนุญาตของรัฐ",
+    "url": "/license",
+    "free": true,
+    "commercial_use": false,
+    "modification": true,
+    "distribution": true,
+    "attribution": true
+  },
+  
+  "disclaimer": {
+    "text": "ระบบนี้จัดทำขึ้นเพื่ออำนวยความสะดวก กรมไม่รับผิดชอบต่อความเสียหายที่อาจเกิดขึ้นจากการใช้งาน",
+    "liability": "limited",
+    "warranty": "none"
+  }
+}
