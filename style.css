@@ -1,180 +1,233 @@
-/* ระบบนำทางระหว่างอาคาร */
+/* ==============================================
+   ระบบนำทางหน่วยงานรัฐ - Stylesheet
+   Version: 3.0 - Complete Edition
+   Date: 2026-09-02
+   Author: กรมส่งเสริมการปกครองท้องถิ่น
+   License: MIT - ใช้งานฟรี 100%
+=============================================== */
+
+/* ========== 1. RESET & BASE STYLES ========== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Segoe UI', 'Kanit', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    padding-bottom: 20px;
+:root {
+    /* Color Scheme - Government Official */
+    --primary-color: #198754;        /* เขียวราชการ */
+    --primary-dark: #146c43;
+    --primary-light: #d1e7dd;
+    --secondary-color: #0d6efd;      /* น้ำเงิน */
+    --accent-color: #ffc107;         /* ทอง */
+    --danger-color: #dc3545;
+    --warning-color: #fd7e14;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-round: 50%;
+    
+    /* Shadows */
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 300ms ease;
+    --transition-slow: 500ms ease;
+    
+    /* Z-index layers */
+    --z-map: 1;
+    --z-header: 100;
+    --z-modal: 1050;
+    --z-toast: 1070;
+    --z-loading: 1080;
 }
 
-/* แผนที่ */
+body {
+    font-family: 'Segoe UI', 'Sarabun', 'Kanit', sans-serif;
+    background-color: var(--gray-100);
+    color: var(--gray-800);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ========== 2. TYPOGRAPHY ========== */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--dark-color);
+    margin-bottom: var(--spacing-md);
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
+
+p {
+    margin-bottom: var(--spacing-md);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+small {
+    font-size: 0.875em;
+    color: var(--gray-600);
+}
+
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.text-success { color: var(--primary-color) !important; }
+.text-danger { color: var(--danger-color) !important; }
+.text-warning { color: var(--warning-color) !important; }
+.text-info { color: var(--info-color) !important; }
+.text-muted { color: var(--gray-600) !important; }
+
+/* ========== 3. HEADER & NAVBAR ========== */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.navbar-brand i {
+    font-size: 1.25rem;
+}
+
+/* ========== 4. MAP CONTAINER ========== */
 #map {
     width: 100%;
     height: 350px;
-    z-index: 1;
-    border-bottom: 3px solid #198754;
+    background-color: var(--gray-200);
+    border-bottom: 3px solid var(--primary-color);
+    z-index: var(--z-map);
+    position: relative;
 }
 
-.leaflet-routing-container {
-    display: none;
-}
-
-/* ซ่อนเส้นทางของ Leaflet */
-
-/* หน้าจอมือถือ */
 @media (max-width: 768px) {
     #map {
         height: 300px;
     }
-
-    .container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
 }
 
-/* การ์ดเส้นทาง */
-.route-card {
-    transition: all 0.3s ease;
-    border-left: 5px solid #198754;
-    margin-bottom: 10px;
-}
-
-.route-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.2);
-}
-
-/* ภาพเส้นทาง */
-.route-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #dee2e6;
-}
-
-/* ปุ่มต่างๆ */
-.btn-route {
-    background: linear-gradient(135deg, #198754, #157347);
-    color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-route:hover {
-    background: linear-gradient(135deg, #157347, #146c43);
-    transform: scale(1.03);
-}
-
-/* ข้อมูลเส้นทาง */
-.route-info-card {
-    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
-    border: 1px solid #c8e6c9;
-    border-radius: 8px;
-    padding: 15px;
-    margin: 10px 0;
-}
-
-/* Progress bar */
-.progress-bar-route {
-    background: linear-gradient(90deg, #198754, #20c997);
-}
-
-/* Animation */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.route-card {
-    animation: fadeInUp 0.5s ease forwards;
-}
-
-/* Badge สำหรับสถานะ */
-.badge-route {
-    background-color: #198754;
-    color: white;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-}
-
-/* แถบเลือกอาคาร */
-.building-select {
-    background: white;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-}
-
-.building-select:hover {
-    border-color: #198754;
-    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
-}
-
-/* แผงนำทางเต็มจอ */
-.fullscreen-navigation {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    z-index: 9999;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-/* ปุ่มควบคุมนำทาง */
-.nav-controls {
-    position: sticky;
-    bottom: 0;
-    background: white;
-    padding: 15px;
-    border-top: 2px solid #f0f0f0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive adjustments */
-@media (max-height: 700px) {
-    .route-image {
-        height: 140px;
-    }
-
+@media (max-width: 576px) {
     #map {
         height: 250px;
     }
 }
 
-/* Highlight selected building */
-.building-selected {
-    background-color: #e8f5e9 !important;
-    border-left: 5px solid #198754 !important;
+/* Map Controls */
+.leaflet-control-container .leaflet-control {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    background: white;
 }
 
-/* Route line on map */
+/* Custom Map Markers */
+.map-marker {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.875rem;
+    border: 3px solid white;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.map-marker:hover {
+    transform: scale(1.1);
+    z-index: 1000 !important;
+}
+
+/* Marker Colors by Category */
+.marker-primary { background-color: var(--primary-color); }
+.marker-secondary { background-color: var(--secondary-color); }
+.marker-success { background-color: var(--primary-color); }
+.marker-warning { background-color: var(--warning-color); }
+.marker-danger { background-color: var(--danger-color); }
+.marker-info { background-color: var(--info-color); }
+.marker-dark { background-color: var(--gray-800); }
+
+/* User Location Marker */
+.user-marker {
+    background-color: var(--secondary-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+}
+
+/* Route Line */
 .route-line {
-    stroke: #198754;
+    stroke: var(--primary-color);
     stroke-width: 4;
     stroke-dasharray: 10, 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     animation: dash 1s linear infinite;
 }
 
@@ -184,195 +237,880 @@ body {
     }
 }
 
-/* Real-time Navigation Styles */
-
-/* เครื่องหมายผู้ใช้แบบเรียลไทม์ */
-.real-time-marker {
-    position: relative;
-    width: 40px;
-    height: 40px;
+/* ========== 5. CARDS & CONTAINERS ========== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
 }
 
-.real-time-marker .dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 16px;
-    height: 16px;
-    background-color: #0d6efd;
-    border: 3px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+@media (max-width: 768px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+}
+
+.card {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: var(--spacing-md);
+    font-weight: 600;
+    border-bottom: 1px solid var(--gray-300);
+}
+
+.card-body {
+    padding: var(--spacing-md);
+}
+
+.card-footer {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--gray-300);
+    background-color: var(--gray-100);
+}
+
+/* Route Selection Card */
+.route-selection-card {
+    margin-bottom: var(--spacing-lg);
+    border-top: 4px solid var(--primary-color);
+}
+
+.route-selection-card .card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+/* Route Info Card */
+.route-info-card {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border: 1px solid var(--primary-light);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.route-stat {
+    text-align: center;
+    padding: var(--spacing-sm);
+}
+
+.route-stat i {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* ========== 6. BUTTONS ========== */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: 2px solid transparent;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25);
+}
+
+/* Button Sizes */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+/* Button Colors */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-success {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-success {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+/* Navigation Controls */
+.btn-control {
+    width: 100%;
+    height: 50px;
+    border-radius: var(--radius-md);
+    font-size: 1.25rem;
+}
+
+.btn-control i {
+    font-size: 1.25rem;
+}
+
+/* ========== 7. FORM ELEMENTS ========== */
+.form-control, .form-select {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+    background-color: white;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25);
+    outline: none;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--gray-700);
+    display: block;
+}
+
+/* ========== 8. NAVIGATION PANEL ========== */
+.navigation-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform var(--transition-normal);
+}
+
+.navigation-panel.show {
+    transform: translateY(0);
+}
+
+.navigation-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: var(--spacing-md);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    position: sticky;
+    top: 0;
     z-index: 2;
 }
 
-.real-time-marker .pulse {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background-color: rgba(13, 110, 253, 0.3);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-    z-index: 1;
+.navigation-body {
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
 }
 
-@keyframes pulse {
+/* Step Indicator */
+.step-indicator {
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.step-text {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.progress {
+    height: 10px;
+    background-color: var(--gray-300);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    transition: width 0.6s ease;
+}
+
+.progress-bar-striped {
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 1rem 1rem;
+}
+
+.progress-bar-animated {
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
     0% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0.7;
+        background-position: 1rem 0;
     }
-
-    70% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0;
-    }
-
     100% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0;
+        background-position: 0 0;
     }
 }
 
-/* แผงข้อมูลนำทางแบบเรียลไทม์ */
-.real-time-info {
-    position: fixed;
-    bottom: 70px;
-    left: 10px;
-    right: 10px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    backdrop-filter: blur(10px);
+/* Step Image */
+.step-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gray-300);
+    box-shadow: var(--shadow-sm);
 }
 
-.real-time-stats {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+@media (max-height: 700px) {
+    .step-image {
+        height: 150px;
+    }
 }
 
-.real-time-stat {
+.image-caption {
+    font-style: italic;
     text-align: center;
-    flex: 1;
 }
 
-.real-time-stat .value {
+/* Instruction Card */
+.instruction-card, .landmarks-card, .accessibility-card {
+    background: white;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+}
+
+.instruction-header, .landmarks-header, .accessibility-header {
+    background: var(--gray-100);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--gray-300);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.instruction-body, .landmarks-body, .accessibility-body {
+    padding: var(--spacing-md);
+}
+
+#instructionText {
+    font-size: 1.125rem;
+    line-height: 1.5;
+    min-height: 3em;
+}
+
+/* Real-time Stats */
+.realtime-stats {
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+}
+
+.realtime-stat {
+    text-align: center;
+}
+
+.realtime-stat .stat-value {
     font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.realtime-stat .stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+}
+
+/* Navigation Controls */
+.navigation-controls {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--gray-300);
+    margin-top: var(--spacing-md);
+}
+
+/* ========== 9. BUILDING TABLE ========== */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--gray-700);
+    background-color: var(--gray-100);
+    border-bottom: 2px solid var(--gray-300);
+    padding: var(--spacing-md);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: var(--spacing-md);
+    vertical-align: middle;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.table tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+.table tbody tr:hover {
+    background-color: var(--gray-100);
+}
+
+.table tbody tr.selected {
+    background-color: var(--primary-light);
+}
+
+/* Building Number Badge */
+.building-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-round);
     font-weight: bold;
-    color: #198754;
+    font-size: 0.875rem;
 }
 
-.real-time-stat .label {
-    font-size: 0.8rem;
-    color: #666;
+/* ========== 10. MODALS ========== */
+.modal-content {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
 }
 
-/* เส้นทางการเดิน */
-.user-path {
-    stroke: #0d6efd;
-    stroke-width: 4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    animation: dash 1s linear infinite;
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
 }
 
-/* หน้าจอแสดงทิศทาง */
-.direction-indicator {
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* App Icon Large */
+.app-icon-large {
     width: 80px;
     height: 80px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: var(--radius-round);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: fixed;
-    bottom: 160px;
-    right: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-}
-
-.direction-arrow {
+    margin: 0 auto;
+    color: white;
     font-size: 2.5rem;
-    color: #198754;
-    transition: transform 0.3s ease;
 }
 
-/* GPS Accuracy */
-.accuracy-circle {
-    stroke: rgba(13, 110, 253, 0.2);
-    stroke-width: 2;
-    fill: rgba(13, 110, 253, 0.1);
+/* Features List */
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: var(--spacing-lg) 0;
 }
 
-/* แอนิเมชันสำหรับการอัพเดทตำแหน่ง */
-@keyframes positionUpdate {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
-.position-updated {
-    animation: positionUpdate 0.5s ease;
+.feature-item i {
+    margin-top: 2px;
+    flex-shrink: 0;
 }
 
-/* ปุ่มควบคุมแบบเรียลไทม์ */
-.real-time-controls {
+/* Tech Info */
+.tech-info {
+    padding: var(--spacing-md);
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+}
+
+/* ========== 11. LOADING OVERLAY ========== */
+.loading-overlay {
     position: fixed;
-    bottom: 20px;
+    top: 0;
     left: 0;
     right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.9);
-    z-index: 1000;
-}
-
-.real-time-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: none;
-    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    z-index: var(--z-loading);
+    backdrop-filter: blur(5px);
 }
 
-.real-time-btn:active {
-    transform: scale(0.95);
+.loading-overlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
 }
 
-.btn-start-tracking {
-    background: #198754;
-    color: white;
+/* ========== 12. TOAST NOTIFICATIONS ========== */
+.toast-container {
+    z-index: var(--z-toast);
 }
 
-.btn-stop-tracking {
-    background: #dc3545;
-    color: white;
+.toast {
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    background: white;
 }
 
-.btn-center-map {
-    background: #0d6efd;
-    color: white;
+.toast-header {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-bottom: 1px solid var(--primary-light);
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
+}
+
+.toast-body {
+    color: var(--gray-700);
+}
+
+/* ========== 13. FOOTER ========== */
+footer {
+    padding: var(--spacing-lg) 0;
+    background: var(--gray-100);
+    margin-top: var(--spacing-xl);
+    border-top: 1px solid var(--gray-300);
+}
+
+/* ========== 14. DARK MODE ========== */
+.dark-mode {
+    background-color: var(--gray-900);
+    color: var(--gray-300);
+}
+
+.dark-mode .card {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+}
+
+.dark-mode .card-header {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+    color: var(--gray-300);
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+    color: var(--gray-300);
+}
+
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+    background-color: var(--gray-800);
+    border-color: var(--primary-color);
+    color: var(--gray-300);
+}
+
+.dark-mode .table {
+    color: var(--gray-300);
+}
+
+.dark-mode .table th {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+    color: var(--gray-300);
+}
+
+.dark-mode .table td {
+    border-color: var(--gray-700);
+    background-color: var(--gray-800);
+}
+
+.dark-mode .table tbody tr:hover {
+    background-color: var(--gray-700);
+}
+
+.dark-mode .btn-outline-primary,
+.dark-mode .btn-outline-secondary {
+    border-color: var(--gray-600);
+    color: var(--gray-300);
+}
+
+.dark-mode .btn-outline-primary:hover,
+.dark-mode .btn-outline-secondary:hover {
+    background-color: var(--gray-700);
+}
+
+.dark-mode .text-muted {
+    color: var(--gray-500) !important;
+}
+
+.dark-mode .navigation-panel {
+    background-color: var(--gray-800);
+}
+
+.dark-mode .instruction-card,
+.dark-mode .landmarks-card,
+.dark-mode .accessibility-card {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+}
+
+.dark-mode .instruction-header,
+.dark-mode .landmarks-header,
+.dark-mode .accessibility-header {
+    background-color: var(--gray-700);
+    border-color: var(--gray-600);
+    color: var(--gray-300);
+}
+
+.dark-mode footer {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
+    color: var(--gray-400);
+}
+
+/* ========== 15. ANIMATIONS ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-bottom {
+    animation: slideInBottom 0.3s ease forwards;
+}
+
+/* ========== 16. UTILITY CLASSES ========== */
+.d-none {
+    display: none !important;
+}
+
+.d-block {
+    display: block !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.flex-column {
+    flex-direction: column !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+.justify-content-center {
+    justify-content: center !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+.mt-5 { margin-top: 2rem !important; }
+
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 2rem !important; }
+
+.mx-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+.p-4 { padding: 1.5rem !important; }
+.p-5 { padding: 2rem !important; }
+
+.w-100 {
+    width: 100% !important;
+}
+
+.h-100 {
+    height: 100% !important;
+}
+
+.rounded {
+    border-radius: var(--radius-md) !important;
+}
+
+.rounded-circle {
+    border-radius: var(--radius-round) !important;
+}
+
+.shadow {
+    box-shadow: var(--shadow-md) !important;
+}
+
+.shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* ========== 17. PRINT STYLES ========== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .app-header,
+    .navigation-panel,
+    .btn,
+    #map {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        page-break-inside: avoid;
+    }
+    
+    footer {
+        page-break-before: always;
+    }
+}
+
+/* ========== 18. ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #006400; /* Dark green */
+        --secondary-color: #00008b; /* Dark blue */
+    }
+    
+    .btn {
+        border-width: 3px;
+    }
+}
+
+/* Large Text Mode */
+@media (prefers-reduced-data: reduce) {
+    .step-image {
+        display: none;
+    }
+}
+
+/* ========== 19. SAFE AREAS (Notch Devices) ========== */
+@supports (padding: max(0px)) {
+    body, .container {
+        padding-left: max(var(--spacing-md), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+    }
+    
+    .navigation-body {
+        padding-bottom: calc(var(--spacing-md) + max(env(safe-area-inset-bottom), 10px));
+    }
+}
+
+/* ========== 20. CUSTOM SCROLLBAR ========== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-200);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+    background: var(--gray-800);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+    background: var(--gray-600);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
 }
