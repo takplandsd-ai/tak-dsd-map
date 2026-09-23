@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบนำทางหน่วยงานรัฐ - แบบเลือกเส้นทาง</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-primary sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-landmark me-2"></i>ระบบนำทางหน่วยงานรัฐ
+            </span>
+            <button class="btn btn-outline-light btn-sm" onclick="showAbout()">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div id="map"></div>
+
+    <div class="container mt-3">
+        <!-- ระบบเลือกเส้นทางระหว่างอาคาร -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-route me-2"></i>เลือกเส้นทางระหว่างอาคาร</h6>
+            </div>
+            <div class="card-body">
+                <!-- จุดเริ่มต้น -->
+                <div class="mb-3">
+                    <label class="form-label small"><i class="fas fa-map-marker-alt me-1"></i>จุดเริ่มต้น</label>
+                    <select id="fromBuilding" class="form-select" onchange="updateToOptions()">
+                        <option value="">-- เลือกอาคารเริ่มต้น --</option>
+                        <!-- ข้อมูลจะถูก JavaScript เติมให้ -->
+                    </select>
+                </div>
+
+                <!-- จุดหมาย -->
+                <div class="mb-3">
+                    <label class="form-label small"><i class="fas fa-flag me-1"></i>จุดหมายปลายทาง</label>
+                    <select id="toBuilding" class="form-select">
+                        <option value="">-- เลือกอาคารปลายทาง --</option>
+                        <!-- ข้อมูลจะถูก JavaScript เติมให้ -->
+                    </select>
+                </div>
+
+                <!-- ข้อมูลเส้นทาง -->
+                <div id="routeInfo" class="alert alert-info d-none">
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-ruler me-1"></i><span id="routeDistance">-</span></span>
+                        <span><i class="fas fa-clock me-1"></i><span id="routeTime">-</span></span>
+                    </div>
+                    <p class="mb-0 small" id="routeDescription">-</p>
+                </div>
+
+                <!-- ปุ่มดำเนินการ -->
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button class="btn btn-outline-primary w-100" onclick="showRouteOnMap()" id="showRouteBtn"
+                            disabled>
+                            <i class="fas fa-map me-1"></i>ดูเส้นทาง
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-success w-100" onclick="startRouteNavigation()" id="startRouteBtn"
+                            disabled>
+                            <i class="fas fa-play me-1"></i>เริ่มนำทาง
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- รายการอาคารทั้งหมด -->
+        <div class="card mt-3">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-building me-2"></i>รายการอาคารทั้งหมด</h6>
+            </div>
+            <div class="card-body p-0">
+                <div id="building-list" class="list-group list-group-flush">
+                    <!-- ข้อมูลจะถูก JavaScript ดึงมาแสดง -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ปุ่มเพิ่มเติม -->
+        <div class="row mt-3 g-2">
+            <div class="col-4">
+                <button class="btn btn-outline-success w-100" onclick="useMyLocation()">
+                    <i class="fas fa-location-arrow"></i>
+                </button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-outline-primary w-100" onclick="showAllBuildings()">
+                    <i class="fas fa-layer-group"></i>
+                </button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-outline-info w-100" onclick="resetRoute()">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- แผงนำทาง -->
+        <div id="navigationPanel" class="card mt-3 d-none">
+            <div class="card-header bg-warning text-dark">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0"><i class="fas fa-route me-2"></i>กำลังนำทาง</h6>
+                        <small id="routeTitle" class="text-muted">-</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-dark" onclick="stopNavigation()">
+                        <i class="fas fa-times"></i> ปิด
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- สถานะเส้นทาง -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="badge bg-primary me-2" id="currentStep">ขั้นตอนที่ 1/5</span>
+                        <span class="badge bg-success" id="routeStats">150 ม. • 3 นาที</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+
+                <!-- ภาพประกอบ -->
+                <div id="routeImageContainer" class="text-center mb-3">
+                    <img src="" class="route-image" id="routeImage"
+                        onerror="this.src='https://via.placeholder.com/400x200/6c757d/ffffff?text=ภาพเส้นทาง'">
+                </div>
+
+                <!-- คำแนะนำ -->
+                <div id="routeInstruction" class="alert alert-light border">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    <span id="instructionText">กรุณาเลือกเส้นทาง</span>
+                </div>
+
+                <!-- จุดสังเกต -->
+                <div id="landmarksInfo" class="alert alert-secondary d-none">
+                    <h6 class="mb-2"><i class="fas fa-map-marker-alt me-1"></i>จุดสังเกตสำคัญ</h6>
+                    <p class="mb-0 small" id="landmarksText">-</p>
+                </div>
+
+                <!-- ความคืบหน้า -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span><i class="fas fa-walking me-1"></i>ความคืบหน้า</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                            role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- ปุ่มควบคุม -->
+                <div class="row g-2">
+                    <div class="col-3">
+                        <button class="btn btn-outline-secondary w-100" onclick="prevStep()" id="prevBtn" disabled>
+                            <i class="fas fa-backward"></i>
+                        </button>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-outline-primary w-100" onclick="speakInstruction()">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-outline-info w-100" onclick="toggleDetails()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary w-100" onclick="nextStep()" id="nextBtn">
+                            <i class="fas fa-forward"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>เกี่ยวกับระบบนำทาง</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>ระบบนำทางระหว่างอาคารหน่วยงานรัฐ</strong></p>
+                    <p>สามารถนำทางจากอาคารใดไปอาคารใดภายในหน่วยงานได้</p>
+                    <ul class="mb-3">
+                        <li>รองรับเส้นทางระหว่างอาคารทั้งหมด</li>
+                        <li>คำแนะนำทีละขั้นตอนพร้อมภาพประกอบ</li>
+                        <li>ระบบเสียงพูดคำแนะนำ</li>
+                        <li>แสดงจุดสังเกตสำคัญ</li>
+                        <li>คำนวณระยะทางและเวลาเดิน</li>
+                    </ul>
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ข้อมูลเส้นทางและภาพประกอบต้องสำรวจและบันทึกจากหน่วยงานจริง
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
